@@ -1,0 +1,20 @@
+* add support for a 'optional' keyword arg in the inject decorator
+* figure out what the rules should be for inheritance
+* inject into things that Guice didn't construct
+  - specifically third party libraries
+* figure out if there is a need to have the injector understand stages
+* make sure that there are tests for duplicated bindings
+  - this should blow up with an error
+* add line numbers to the exception messages to show where the module failed
+* should we go the extra mile with annotations like Google Guice?
+* do we need an implemented_by or provided_by decorators?
+  - this could be useful to specify a default implementation
+* the binding .in should behave like a scope
+* scoping decorators
+  - figure out what to do when the module binding differ
+* singleton loading should be based on the stage
+* is it possible to order the loading of the singletons?
+* constant binding
+* circular dependency checking
+* What is the Override annotation?
+* Process all dependencies possible before reporting an error
