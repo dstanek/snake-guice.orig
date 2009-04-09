@@ -12,7 +12,6 @@ class HelloWorld(object):
         self._request_data_provider = request_data_provider
 
     def index(self):
-        from cherrypy import session
         output = ["Hello world!<br><br>"]
 
         user = self._user_provider.get()
