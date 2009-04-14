@@ -21,13 +21,13 @@ class FileLogger(Logger): pass
 ## start session.py
 ## Session in a stateful application.
 
-from snakeguice import property_inject
+from snakeguice import inject
 
 #from loggers import Logger -- not needed in this example
 
 class Session(object): pass
 class WebSession(object):
-    property_inject(logger=Logger)
+    logger = inject(Logger)
 
 ## start session.py
 
@@ -38,13 +38,13 @@ class WebSession(object):
 ## start handlers.py
 ## Defines handlers that are used for each request.
 
-from snakeguice import property_inject
+from snakeguice import inject
 
 #from session import Session -- not needed in this example
 
 class Handler(object):
 
-    property_inject(session=Session)
+    session = inject(Session)
 
     def handle(self, request):
         """got something!"""
@@ -61,7 +61,7 @@ class SMTPHandler(Handler): pass
 ## start server.py
 ## Basic serving functionality
 
-from snakeguice import property_inject
+from snakeguice import inject
 
 #from handlers import Handler -- not needed in this example
 
@@ -69,7 +69,7 @@ class Server(object): pass
 
 class WebServer(Server):
 
-    property_inject(handler=Handler)
+    handler = inject(Handler)
 
     def start(self):
         fake_requests = (1, 2, 3)
@@ -104,7 +104,7 @@ class MyAppModule:
 ## start application.py
 ## This would be the entry point of your application.
 
-from snakeguice import create_injector
+from snakeguice import Injector
 
 #from myappmodule import MyAppModule -- not needed in this example
 #from server import Server -- not needed in this example
@@ -116,7 +116,7 @@ class Application(object):
     """
     
     def __init__(self):
-        injector = create_injector(MyAppModule())
+        injector = Injector(MyAppModule())
         #connect_to_db()
         #read_config_files()
 
