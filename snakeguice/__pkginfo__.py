@@ -5,8 +5,7 @@ libname = 'snake-guice'
 modname = 'snakeguice'
 packages = ['snakeguice']
 
-numversion = (0, 1, 0)
-version = '.'.join([str(num) for num in numversion])
+version = '0.2.0dev'
 
 license = 'MIT'
 copyright = 'Copyright (c) 2008 David Stanek (dstanek@dstanek.com)'
