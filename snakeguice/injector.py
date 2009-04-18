@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from snakeguice.binder import Binder
+from snakeguice.decorators import GuiceData as _GuiceData
 
 
 class Injector(object):
@@ -49,7 +50,7 @@ class Injector(object):
         if not hasattr(cls, '__guice__'):
             return cls()
 
-        guice_data = cls.__guice__
+        guice_data = self._get_guice_data(cls)
 
         if not guice_data.init:
             instance = cls()
@@ -71,6 +72,21 @@ class Injector(object):
             getattr(instance, name)(**kwargs)
 
         return instance
+
+    def _get_guice_data(self, cls):
+        guice_data = _GuiceData()
+
+        for cls in cls.__mro__[-1::-1]:
+            if hasattr(cls, '__guice__'):
+                for name, prop in cls.__guice__.properties:
+                    guice_data.properties.append((name, prop))
+                for name, method in cls.__guice__.methods:
+                    guice_data.methods.append((name, method))
+
+        if hasattr(cls, '__guice__'):
+            guice_data.init = cls.__guice__.init
+
+        return guice_data
 
     def create_child(self, modules):
         """Create a new injector that inherits the state from this injector.

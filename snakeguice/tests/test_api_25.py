@@ -195,7 +195,6 @@ class TestMethodInterceptors(object):
         obj = self.injector.get_instance(DomainObject)
         obj.intercept_me()
 
-
 #TODO: constant injection
 
 #TODO: provider injection
