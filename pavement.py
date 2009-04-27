@@ -1,10 +1,9 @@
 import os
 import sys
-from paver.defaults import *
+from paver.easy import *
 import paver
-import paver.runtime
 
-sys.path.insert(0, paver.runtime.path.getcwd())
+sys.path.insert(0, os.path.dirname(__file__))
 
 from snakeguice import __pkginfo__ as pkg
 
