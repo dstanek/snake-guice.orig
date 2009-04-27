@@ -18,3 +18,5 @@
 * circular dependency checking
 * What is the Override annotation?
 * Process all dependencies possible before reporting an error
+* Add a Singleton class decorator
+* Add an ImplementedBy class decorator
