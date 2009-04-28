@@ -1,0 +1,8 @@
+snake-guice {version} has just been released.
+
+* Homepage, Repository and Issue Tracker on Google Code http://code.google.com/p/snake-guice/
+* Download snake-guice {version} release http://code.google.com/p/snake-guice/downloads/list
+* snake-guice Documentation as a PDF http://
+* snake-guice entry on PyPI http://pypi.python.org/pypi/snake-guice/
+
+{message}
