@@ -14,8 +14,8 @@ def test_inject_init():
             pass
     
     assert SomeClass.__guice__.init == GuiceMethod({'x': int})
-    assert SomeClass.__guice__.methods == []
-    assert SomeClass.__guice__.properties == []
+    assert len(SomeClass.__guice__.methods) == 0
+    assert len(SomeClass.__guice__.properties) == 0
 
 
 def test_inject_methods():
@@ -28,10 +28,10 @@ def test_inject_methods():
             pass
 
     assert SomeClass.__guice__.init is None
-    assert SomeClass.__guice__.methods == [
+    assert SomeClass.__guice__.methods.items() == [
             ('go', GuiceMethod({'y': float})),
     ]
-    assert SomeClass.__guice__.properties == []
+    assert len(SomeClass.__guice__.properties) == 0
 
 def test_inject_provider():
     """ Using property injection, and then auto-providing instance to
@@ -77,8 +77,8 @@ def test_inject_properties():
         prop_b = inject(object)
 
     assert SomeClass.__guice__.init is None
-    assert SomeClass.__guice__.methods == []
-    assert SomeClass.__guice__.properties == [
+    assert len(SomeClass.__guice__.methods) == 0
+    assert SomeClass.__guice__.properties.items() == [
             ('prop_a', GuiceProperty(int)),
             ('prop_b', GuiceProperty(object)),
     ]
@@ -105,11 +105,11 @@ def test_inject_all():
 
     assert (SomeClass.__guice__.init ==
             GuiceMethod({'a': bool, 'b': int, 'c': float}, 'test'))
-    assert SomeClass.__guice__.methods == [
+    assert SomeClass.__guice__.methods.items() == [
             ('go', GuiceMethod({'y': float})),
             ('stop', GuiceMethod({'x': int, 'y': int, 'z': object}, 'test')),
     ]
-    assert SomeClass.__guice__.properties == [
+    assert SomeClass.__guice__.properties.items() == [
             ('prop_a', GuiceProperty(int)),
             ('prop_b', GuiceProperty(object, 'test')),
     ]

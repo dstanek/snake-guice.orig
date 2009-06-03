@@ -1,4 +1,6 @@
 import inspect
+
+from snakeguice.odict import OrderedDict
 from snakeguice.errors import DecorationError
 from snakeguice.utils import Injected
 from peak.util.decorators import decorate_assignment
@@ -8,8 +10,8 @@ class GuiceData(object):
 
     def __init__(self):
         self.init = None
-        self.methods = []
-        self.properties = []
+        self.methods = OrderedDict()
+        self.properties = OrderedDict()
 
 
 class GuiceProperty(object):
@@ -86,7 +88,7 @@ def inject(*args, **kwargs):
 
         if func.__module__ == 'peak.util.decorators':
             _validate_property_args(func, args, kwargs)
-            guice_data.properties.append((name, GuiceProperty(args[0], annotation, scope)))
+            guice_data.properties[name] = GuiceProperty(args[0], annotation, scope)
             return InjectedProperty(name)
         elif name == '__init__':
             _validate_func_args(func, args, kwargs)
@@ -94,7 +96,7 @@ def inject(*args, **kwargs):
             return func
         else:
             _validate_func_args(func, args, kwargs)
-            guice_data.methods.append((name, GuiceMethod(kwargs, annotation, scope)))
+            guice_data.methods[name] = GuiceMethod(kwargs, annotation, scope)
             return func
 
     return decorate_assignment(callback, depth=2)
