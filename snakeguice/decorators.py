@@ -14,27 +14,26 @@ class GuiceData(object):
 
 class GuiceProperty(object):
 
-    def __init__(self, type=None, annotation=None, scope=None):
-        # pylint: disable-msg=W0622
-        self.type = type
+    def __init__(self, datatype=None, annotation=None, scope=None):
+        self.datatype = datatype
         self.annotation = annotation
         self.scope = scope
 
     def __eq__(self, other):
-        return (self.type, self.annotation, self.scope
-                ) == (other.type, other.annotation, other.scope)
+        return (self.datatype, self.annotation, self.scope
+                ) == (other.datatype, other.annotation, other.scope)
 
 
 class GuiceMethod(object):
 
-    def __init__(self, types=None, annotation=None, scope=None):
-        self.types = types
+    def __init__(self, datatypes=None, annotation=None, scope=None):
+        self.datatypes = datatypes
         self.annotation = annotation
         self.scope = scope
 
     def __eq__(self, other):
-        return (self.types, self.annotation, self.scope
-                ) == (other.types, other.annotation, other.scope)
+        return (self.datatypes, self.annotation, self.scope
+                ) == (other.datatypes, other.annotation, other.scope)
 
 
 class InjectedProperty(object):
