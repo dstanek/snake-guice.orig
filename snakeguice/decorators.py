@@ -2,7 +2,6 @@ import inspect
 
 from snakeguice.odict import OrderedDict
 from snakeguice.errors import DecorationError
-from snakeguice.utils import Injected
 from peak.util.decorators import decorate_assignment
 
 

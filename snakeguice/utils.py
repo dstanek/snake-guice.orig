@@ -1,1 +1,0 @@
-Injected = object()
