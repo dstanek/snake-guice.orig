@@ -17,7 +17,7 @@ class Module(object):
         binder.bind(Data, annotated_with='new', to=NewData)
 
 
-def describe_inheriting_an_attribute():
+def describe_a_child_inheriting_an_attribute():
     class Parent(object):
         parent_attr = inject(Data, annotation='old')
 
@@ -33,7 +33,7 @@ def describe_inheriting_an_attribute():
         assert isinstance(instance.child_attr, NewData)
 
 
-def describe_inheriting_a_method():
+def describe_a_child_inheriting_an_injected_method():
     class Parent(object):
         @inject(value=Data, annotation='old')
         def set_parent_value(self, value):
@@ -53,7 +53,7 @@ def describe_inheriting_a_method():
         assert isinstance(instance.child_value, NewData)
 
 
-def describe_overriding_an_inherited_method():
+def describe_a_child_overriding_an_inherited_method():
     class Parent(object):
         @inject(value=Data, annotation='old')
         def set_value(self, value):
