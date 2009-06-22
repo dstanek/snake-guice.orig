@@ -20,3 +20,4 @@
 * Process all dependencies possible before reporting an error
 * Add a Singleton class decorator
 * Add an ImplementedBy class decorator
+* Allow module overriding like: Modules.override(Module).with(Module...)
