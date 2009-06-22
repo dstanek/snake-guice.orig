@@ -57,15 +57,17 @@ def describe_a_child_overriding_an_inherited_method():
     class Parent(object):
         @inject(value=Data, annotation='old')
         def set_value(self, value):
-            self.value = value
+            self.parent_value = value
 
     class Child(Parent):
         @inject(value=Data, annotation='new')
         def set_value(self, value):
-            self.value = value
+            self.child_value = value
 
     instance = Injector(Module()).get_instance(Child)
 
     def value_should_be_set_by_child():
-        assert isinstance(instance.value, NewData)
+        assert isinstance(instance.child_value, NewData)
 
+    def value_should_not_be_set_by_parent():
+        assert hasattr(instance, 'parent_value') == False
