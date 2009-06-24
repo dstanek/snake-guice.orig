@@ -69,3 +69,15 @@ try:
             figleaf.write_coverage('.figleaf')
 except ImportError:
     """Nose is not installed."""
+
+
+try:
+    import mote
+    @task
+    @cmdopts([('quiet', 'q', "Don't print the specification")])
+    def specs():
+        """Run specs with mote."""
+        sys.argv.append('specs')
+        mote.main()
+except ImportError:
+    """mote is not installed."""
