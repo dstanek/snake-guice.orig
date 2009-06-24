@@ -11,8 +11,8 @@ class _NoScope(object):
     a module.
     """
 
-    def scope(self, key, provider): # pylint: disable-msg=R0201,W0613
-        return provider
+    def scope(self, key, unscoped_provider): # pylint: disable-msg=R0201,W0613
+        return unscoped_provider
 
 
 class _Singleton(object):
