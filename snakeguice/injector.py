@@ -6,30 +6,18 @@ from snakeguice.decorators import GuiceData as _GuiceData
 
 class Injector(object):
 
-    parent = None
-    binding_map = None
-    stage = None
-
-    def __init__(self, modules, parent=None):
+    def __init__(self, modules, binder=None, stage=None):
         if not hasattr(modules, '__iter__'):
             modules = [modules]
-        if parent:
-            self.parent = parent
-            self.binding_map = parent.binding_map.copy()
-            self.stage = parent.stage
-        else:
-            self.binding_map = {}
-        binder = Binder(self)
+
+        self._binder = binder or Binder(self)
+        self._stage = stage
+
         for module in modules:
-            module.configure(binder)
+            module.configure(self._binder)
 
     def get_binding(self, _class, annotation=None):
-        key = (_class, annotation)
-        binding = self.binding_map.get(key)
-        if not binding:
-            key = (_class, None)
-            binding = self.binding_map.get(key)
-        return binding
+        return self._binder.get_binding(_class, annotation)
 
     def get_instance(self, cls, annotation=None):
         key = (cls, annotation)
@@ -42,6 +30,15 @@ class Injector(object):
 
         instance = self.create_object(impl_class)
         return instance
+
+    def create_child(self, modules):
+        """Create a new injector that inherits the state from this injector.
+
+        All bindings are inherited. In the future this may become closer to
+        child injectors on google-guice.
+        """
+        binder = self._binder.create_child()
+        return Injector(modules, binder=binder, stage=self._stage)
 
     def create_object(self, cls):
         if not isinstance(cls, type):
@@ -87,12 +84,3 @@ class Injector(object):
             guice_data.init = cls.__guice__.init
 
         return guice_data
-
-    def create_child(self, modules):
-        """Create a new injector that inherits the state from this injector.
-
-        All bindings are inherited. In the future this may become closer to
-        child injectors on google-guice.
-        """
-        injector = Injector(modules, parent=self)
-        return injector
