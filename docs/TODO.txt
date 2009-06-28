@@ -9,9 +9,6 @@
 * should we go the extra mile with annotations like Google Guice?
 * do we need an implemented_by or provided_by decorators?
   - this could be useful to specify a default implementation
-* the binding .in should behave like a scope
-* scoping decorators
-  - figure out what to do when the module binding differ
 * singleton loading should be based on the stage
 * is it possible to order the loading of the singletons?
 * constant binding
@@ -21,3 +18,9 @@
 * Add a Singleton class decorator
 * Add an ImplementedBy class decorator
 * Allow module overriding like: Modules.override(Module).with(Module...)
+* binding to_instance should still to method & property injection
+
+* Better scope implementation
+  - use separate Scoped decorators bound to a Scope in a module
+  - module overrides the decorated scope
+  - document the enter and exit methods
