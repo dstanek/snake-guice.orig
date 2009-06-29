@@ -2,26 +2,25 @@ import os
 import sys
 from paver.easy import *
 import paver
+from paver.setuputils import setup
 
 sys.path.insert(0, os.path.dirname(__file__))
 
 from snakeguice import __pkginfo__ as pkg
 
 
-options(
-        setup=Bunch(
-            name=pkg.libname,
-            version=pkg.version,
-            license=pkg.license,
-            packages=pkg.packages,
-            author=pkg.author,
-            author_email=pkg.author_email,
-            description=pkg.short_desc,
-            long_description=pkg.long_desc,
-            classifiers=pkg.classifiers,
-            url=pkg.url,
-            download_url=pkg.download_url
-        )
+setup(
+    name=pkg.libname,
+    version=pkg.version,
+    license=pkg.license,
+    packages=pkg.packages,
+    author=pkg.author,
+    author_email=pkg.author_email,
+    description=pkg.short_desc,
+    long_description=pkg.long_desc,
+    classifiers=pkg.classifiers,
+    url=pkg.url,
+    download_url=pkg.download_url
 )
 
 
