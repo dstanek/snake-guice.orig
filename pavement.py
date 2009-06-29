@@ -80,3 +80,9 @@ try:
         mote.main()
 except ImportError:
     """mote is not installed."""
+
+
+@task
+@needs(['test', 'specs'])
+def all_tests():
+    """Run unit tests and specs."""
