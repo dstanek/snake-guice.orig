@@ -1,8 +1,8 @@
+import sys
 import inspect
 
 from snakeguice.odict import OrderedDict
 from snakeguice.errors import DecorationError
-from peak.util.decorators import decorate_assignment
 
 
 class GuiceData(object):
@@ -37,15 +37,8 @@ class GuiceMethod(object):
                 ) == (other.datatypes, other.annotation, other.scope)
 
 
-class InjectedProperty(object):
-
-    def __init__(self, name):
-        self.name = name
-
-
 class Provided(object):
     """ Interface for argument to be provided. """
-    pass
 
 
 def _validate_func_args(func, args, kwargs):
@@ -68,6 +61,13 @@ def _validate_property_args(func, args, kwargs): # pylint: disable-msg=W0613
                 'when decorating a property')
 
 
+def enclosing_frame(frame=None, level=2):
+    """Get an enclosing frame that skips DecoratorTools callback code"""
+    frame = frame or sys._getframe(level)
+    while frame.f_globals.get('__name__')==__name__: frame = frame.f_back
+    return frame
+
+
 def inject(*args, **kwargs):
 
     annotation = kwargs.get('annotation')
@@ -78,27 +78,27 @@ def inject(*args, **kwargs):
     if 'scope' in kwargs:
         del kwargs['scope']
 
-    def callback(frame, name, func, old_locals): # pylint: disable-msg=W0613
-        class_locals = frame.f_locals
+    def _inject(func):
+        class_locals = enclosing_frame().f_locals
+        #if not hasattr(func, 'im_class'):
+        #    raise DecorationError("snake-guice can't inject into functions")
 
         guice_data = class_locals.get('__guice__')
         if not guice_data:
             guice_data = class_locals['__guice__'] = GuiceData()
 
-        if func.__module__ == 'peak.util.decorators':
-            _validate_property_args(func, args, kwargs)
-            guice_data.properties[name] = GuiceProperty(args[0], annotation, scope)
-            return InjectedProperty(name)
-        elif name == '__init__':
+        if func.__name__ == '__init__':
             _validate_func_args(func, args, kwargs)
             guice_data.init = GuiceMethod(kwargs, annotation, scope)
-            return func
         else:
             _validate_func_args(func, args, kwargs)
-            guice_data.methods[name] = GuiceMethod(kwargs, annotation, scope)
-            return func
+            guice_data.methods[func.__name__] = GuiceMethod(
+                    kwargs, annotation, scope)
+    
+        return func
 
-    return decorate_assignment(callback, depth=2)
+    return _inject
+
 
 class provide(object):
     """ Decorator for method with arguments to be provided by DI at runtime.
