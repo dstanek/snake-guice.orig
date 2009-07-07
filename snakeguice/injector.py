@@ -58,10 +58,6 @@ class Injector(object):
                         _type, guice_data.init.annotation)
             instance = cls(**kwargs)
 
-        for name, gp in guice_data.properties.items():
-            value = self.get_instance(gp.datatype, gp.annotation)
-            setattr(instance, name, value)
-
         for name, gm in guice_data.methods.items():
             kwargs = {}
             for param, _type in gm.datatypes.items():
@@ -75,8 +71,6 @@ class Injector(object):
 
         for cls in cls.__mro__[-1::-1]:
             if hasattr(cls, '__guice__'):
-                for name, prop in cls.__guice__.properties.items():
-                    guice_data.properties[name] = prop
                 for name, method in cls.__guice__.methods.items():
                     guice_data.methods[name] = method
 

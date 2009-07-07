@@ -1,6 +1,6 @@
 from nose.tools import raises
 from snakeguice.errors import DecorationError
-from snakeguice.decorators import inject, GuiceProperty, GuiceMethod
+from snakeguice.decorators import inject, GuiceMethod
 from snakeguice.decorators import provide, Provided
 
 
@@ -15,7 +15,6 @@ def test_inject_init():
     
     assert SomeClass.__guice__.init == GuiceMethod({'x': int})
     assert len(SomeClass.__guice__.methods) == 0
-    assert len(SomeClass.__guice__.properties) == 0
 
 
 def test_inject_methods():
@@ -31,7 +30,6 @@ def test_inject_methods():
     assert SomeClass.__guice__.methods.items() == [
             ('go', GuiceMethod({'y': float})),
     ]
-    assert len(SomeClass.__guice__.properties) == 0
 
 def __test_inject_provider():
     """ Using property injection, and then auto-providing instance to

@@ -10,19 +10,6 @@ class GuiceData(object):
     def __init__(self):
         self.init = None
         self.methods = OrderedDict()
-        self.properties = OrderedDict()
-
-
-class GuiceProperty(object):
-
-    def __init__(self, datatype=None, annotation=None, scope=None):
-        self.datatype = datatype
-        self.annotation = annotation
-        self.scope = scope
-
-    def __eq__(self, other):
-        return (self.datatype, self.annotation, self.scope
-                ) == (other.datatype, other.annotation, other.scope)
 
 
 class GuiceMethod(object):
