@@ -13,13 +13,33 @@ import cls_heirarchy as ch
 class TestSingletonScope(object):
 
     class DomainObject(object):
-        logger_a = inject(ch.Logger)
-        logger_b = inject(ch.Logger)
-        logger_c = inject(ch.Logger)
-        place_a = inject(ch.Place, annotation='hot')
-        place_b = inject(ch.Place, annotation='hot')
-        place_c = inject(ch.Place, annotation='cold')
-        place_d = inject(ch.Place, annotation='cold')
+
+        @inject(logger_a=ch.Logger, logger_b=ch.Logger, logger_c=ch.Logger)
+        def set_loggers(self, logger_a=Injected, logger_b=Injected,
+                logger_c=Injected):
+            self.logger_a = logger_a
+            self.logger_b = logger_b
+            self.logger_c = logger_c
+
+        @inject(place_a=ch.Place, annotation='hot')
+        def set_place_a(self, place_a):
+            self.place_a = place_a
+
+        @inject(place_b=ch.Place, annotation='hot')
+        def set_place_b(self, place_b):
+            self.place_b = place_b
+
+        @inject(place_c=ch.Place, annotation='cold')
+        def set_place_c(self, place_c):
+            self.place_c = place_c
+
+        @inject(place_d=ch.Place, annotation='cold')
+        def set_place_d(self, place_d):
+            self.place_d = place_d
+
+        @inject(place_d=ch.Place, annotation='cold')
+        def set_place_d(self, place_d):
+            self.place_d = place_d
 
     def assert_obj(self, obj):
         assert obj.logger_a is obj.logger_b
@@ -64,10 +84,16 @@ class TestSingletonScope(object):
         obj = Injector(MyModule()).get_instance(self.DomainObject)
         self.assert_obj(obj)
 
-    def _test_inject_into_eager_singleton(self):
+    def __test_inject_into_eager_singleton(self):
         class MyLogger(object):
-            hot_place = inject(ch.Place, annotation='hot')
-            cold_place = inject(ch.Place, annotation='cold')
+
+            @inject(place=ch.Place, annotation='hot')
+            def set_hot_place(self, place):
+                self.hot_place = place
+
+            @inject(place=ch.Place, annotation='cold')
+            def set_cold_place(self, place):
+                self.cold_place = place
 
         class MyModule:
             def configure(self, binder):
