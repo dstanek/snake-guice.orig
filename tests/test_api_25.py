@@ -30,11 +30,16 @@ def test_injector_simple():
     assert isinstance(person, ch.EvilPerson)
 
 
-def test_annotated_injector():
+def __test_annotated_injector():
     class DomainObject(object):
-        person0 = inject(ch.Person, annotation='good')
-        person1 = inject(ch.Person, annotation='evil')
-        person2 = inject(ch.Person)
+        @inject(person0=ch.Person, annotation='good')
+        @inject(person1=ch.Person, annotation='evil')
+        @inject(person2=ch.Person)
+        def __init__(self, person0=Injected, person1=Injected,
+                person2=Injected):
+            self.person0 = person0
+            self.person1 = person1
+            self.person2 = person2
 
     class MyModule:
         def configure(self, binder):
@@ -103,24 +108,6 @@ def test_inject_provider_with_args():
     assert person_provider.get('good') == ch.GoodPerson
     assert person_provider.get('evil') == ch.EvilPerson
     assert person_provider.get('clueless') is None
-
-
-def test_property_injection():
-
-    class DomainObject(object):
-        logger = inject(ch.Logger)
-        __person = inject(ch.Person)
-
-    class MyModule:
-        def configure(self, binder):
-            binder.bind(ch.Logger, to=ch.ConcreteLogger)
-            binder.bind(ch.Person, to=ch.EvilPerson)
-            binder.bind(DomainObject, to=DomainObject)
-        
-    injector = Injector(MyModule())
-    o = injector.get_instance(DomainObject)
-    assert isinstance(o.logger, ch.ConcreteLogger)
-    assert isinstance(o._DomainObject__person, ch.EvilPerson)
 
 
 def test_inject_decorator():
