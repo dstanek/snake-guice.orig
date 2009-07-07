@@ -7,7 +7,7 @@ Examples of using the snakeguice API.
 #TODO: add a test proving call throughs work
 
 
-from snakeguice import inject, Injected, ParameterInterceptor
+from snakeguice import inject, Injected, ParameterInterceptor, annotate
 from snakeguice import Injector
 
 import cls_heirarchy as ch
@@ -52,6 +52,31 @@ def __test_annotated_injector():
     assert isinstance(obj.person0, ch.GoodPerson)
     assert isinstance(obj.person1, ch.EvilPerson)
     assert isinstance(obj.person2, ch.Person)
+
+
+def test_annotations():
+    class DomainObject(object):
+        @inject(hero=ch.Person, villian=ch.Person, victim=ch.Person)
+        @annotate(hero='good', villian='evil')
+        def __init__(self, hero=Injected, villian=Injected, victim=Injected):
+            self.hero = hero
+            self.villian = villian
+            self.victim = victim
+
+    class ByStander(ch.Person):
+        pass
+
+    class MyModule:
+        def configure(self, binder):
+            binder.bind(ch.Person, annotated_with='evil', to=ch.EvilPerson)
+            binder.bind(ch.Person, annotated_with='good', to=ch.GoodPerson)
+            binder.bind(ch.Person, to=ByStander)
+
+    injector = Injector(MyModule())
+    obj = injector.get_instance(DomainObject)
+    assert isinstance(obj.hero, ch.GoodPerson)
+    assert isinstance(obj.villian, ch.EvilPerson)
+    assert isinstance(obj.victim, ByStander)
 
 
 def test_injector_injecting_a_provider():

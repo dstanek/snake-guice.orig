@@ -53,15 +53,16 @@ class Injector(object):
             instance = cls()
         else:
             kwargs = {}
-            for name, _type in guice_data.init.datatypes.items():
-                kwargs[name] = self.get_instance(
-                        _type, guice_data.init.annotation)
+            for name, guicearg in guice_data.init.items():
+                kwargs[name] = self.get_instance(guicearg.datatype,
+                                                 guicearg.annotation)
             instance = cls(**kwargs)
 
         for name, gm in guice_data.methods.items():
             kwargs = {}
-            for param, _type in gm.datatypes.items():
-                kwargs[param] = self.get_instance(_type, gm.annotation)
+            for param, guicearg in gm.items():
+                kwargs[param] = self.get_instance(guicearg.datatype,
+                                                  guicearg.annotation)
             getattr(instance, name)(**kwargs)
 
         return instance
