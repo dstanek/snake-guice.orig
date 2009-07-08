@@ -47,7 +47,7 @@ def describe_a_child_overriding_an_inherited_method():
             self.parent_value = value
 
     class Child(Parent):
-        @inject(value=Data, annotation='new')
+        @inject(value=Data)
         @annotate(value='new')
         def set_value(self, value):
             self.child_value = value

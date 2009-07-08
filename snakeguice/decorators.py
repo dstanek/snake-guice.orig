@@ -56,14 +56,6 @@ def enclosing_frame(frame=None, level=2):
 
 def inject(*args, **kwargs):
 
-    annotation = kwargs.get('annotation')
-    if 'annotation' in kwargs:
-        del kwargs['annotation']
-
-    scope = kwargs.get('scope')
-    if 'scope' in kwargs:
-        del kwargs['scope']
-
     def _inject(func):
         class_locals = enclosing_frame().f_locals
         #if not hasattr(func, 'im_class'):
