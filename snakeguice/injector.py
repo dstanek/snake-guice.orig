@@ -38,9 +38,6 @@ class Injector(object):
         return Injector(modules, binder=binder, stage=self._stage)
 
     def create_object(self, cls):
-        if not isinstance(cls, type):
-            return cls
-
         if not hasattr(cls, '__guice__'):
             return cls()
 
