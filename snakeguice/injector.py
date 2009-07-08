@@ -24,12 +24,9 @@ class Injector(object):
         binding = self.get_binding(*key)
         if binding:
             provider = binding.scope.scope(key, binding.provider)
-            impl_class = provider.get()
+            return provider.get()
         else:
-            impl_class = cls
-
-        instance = self.create_object(impl_class)
-        return instance
+            return self.create_object(cls)
 
     def create_child(self, modules):
         """Create a new injector that inherits the state from this injector.
