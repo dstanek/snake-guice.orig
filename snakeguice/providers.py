@@ -19,7 +19,6 @@ class InstanceProvider(object):
         self._obj = obj
 
     def get(self):
-        print 'getting a', self._obj
         return self._obj
 
 

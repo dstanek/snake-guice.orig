@@ -37,7 +37,6 @@ class Binder(object):
         elif 'to_instance' in kwargs:
             #TODO: add some validation
             provider = kwargs['to_instance']
-            print 'binding to_instance', provider
             binding.provider = providers.InstanceProvider(provider)
 
         if 'annotated_with' in kwargs:
