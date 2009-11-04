@@ -3,7 +3,7 @@
 """Specification for how snake-guice handles inherited classes."""
 
 
-from snakeguice import Injector, inject, Injected
+from snakeguice import Injector, inject, Injected, annotate
 
 
 class Data(object): pass
@@ -17,30 +17,16 @@ class Module(object):
         binder.bind(Data, annotated_with='new', to=NewData)
 
 
-def describe_a_child_inheriting_an_attribute():
-    class Parent(object):
-        parent_attr = inject(Data, annotation='old')
-
-    class Child(Parent):
-        child_attr = inject(Data, annotation='new')
-
-    instance = Injector(Module()).get_instance(Child)
-
-    def parent_attribute_should_be_set():
-        assert isinstance(instance.parent_attr, OldData)
-
-    def child_attribute_should_be_set():
-        assert isinstance(instance.child_attr, NewData)
-
-
 def describe_a_child_inheriting_an_injected_method():
     class Parent(object):
-        @inject(value=Data, annotation='old')
+        @inject(value=Data)
+        @annotate(value='old')
         def set_parent_value(self, value):
             self.parent_value = value
 
     class Child(Parent):
-        @inject(value=Data, annotation='new')
+        @inject(value=Data)
+        @annotate(value='new')
         def set_child_value(self, value):
             self.child_value = value
 
@@ -55,12 +41,14 @@ def describe_a_child_inheriting_an_injected_method():
 
 def describe_a_child_overriding_an_inherited_method():
     class Parent(object):
-        @inject(value=Data, annotation='old')
+        @inject(value=Data)
+        @annotate(value='old')
         def set_value(self, value):
             self.parent_value = value
 
     class Child(Parent):
-        @inject(value=Data, annotation='new')
+        @inject(value=Data)
+        @annotate(value='new')
         def set_value(self, value):
             self.child_value = value
 

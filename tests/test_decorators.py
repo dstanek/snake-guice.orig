@@ -1,6 +1,6 @@
 from nose.tools import raises
 from snakeguice.errors import DecorationError
-from snakeguice.decorators import inject, GuiceMethod
+from snakeguice.decorators import inject, GuiceArg, annotate
 from snakeguice.decorators import provide, Provided
 
 
@@ -13,7 +13,7 @@ def test_inject_init():
         def __init__(self, x):
             pass
     
-    assert SomeClass.__guice__.init == GuiceMethod({'x': int})
+    assert SomeClass.__guice__.init == {'x': GuiceArg(int)}
     assert len(SomeClass.__guice__.methods) == 0
 
 
@@ -28,7 +28,7 @@ def test_inject_methods():
 
     assert SomeClass.__guice__.init is None
     assert SomeClass.__guice__.methods.items() == [
-            ('go', GuiceMethod({'y': float})),
+            ('go', {'y': GuiceArg(float)}),
     ]
 
 def __test_inject_provider():
@@ -70,10 +70,12 @@ def __test_inject_provider():
 
 def test_inject_all():
     """Using combinations of inject including annotations."""
+    #TODO: add annotation stuff again
 
     class SomeClass(object):
     
-        @inject(a=bool, b=int, c=float, annotation='test')
+        @inject(a=bool, b=int, c=float)
+        @annotate(a='free', b='paid')
         def __init__(self, a, b, c):
             pass
     
@@ -81,16 +83,18 @@ def test_inject_all():
         def go(self, y):
             pass
 
-        @inject(x=int, y=int, z=object, annotation='test')
+        @inject(x=int, y=int, z=object)
+        @annotate(y='old', z='new')
         def stop(self, x, y, z):
             pass
 
-    assert (SomeClass.__guice__.init ==
-            GuiceMethod({'a': bool, 'b': int, 'c': float}, 'test'))
+    assert (SomeClass.__guice__.init == 
+            {'a': GuiceArg(bool, 'free'), 'b': GuiceArg(int, 'paid'), 'c': GuiceArg(float)})
+    print SomeClass.__guice__.methods.items()
     assert SomeClass.__guice__.methods.items() == [
-            ('go', GuiceMethod({'y': float})),
-            ('stop', GuiceMethod({'x': int, 'y': int, 'z': object}, 'test')),
-    ]
+            ('go', {'y': GuiceArg(float)}),
+            ('stop', 
+             {'x': GuiceArg(int), 'y': GuiceArg(int, 'old'), 'z': GuiceArg(object, 'new')})]
 
 
 @raises(DecorationError)

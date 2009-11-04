@@ -3,6 +3,7 @@ import inspect
 
 from snakeguice.odict import OrderedDict
 from snakeguice.errors import DecorationError
+from snakeguice.ext import ParameterExtension
 
 
 class GuiceData(object):
@@ -12,16 +13,16 @@ class GuiceData(object):
         self.methods = OrderedDict()
 
 
-class GuiceMethod(object):
+class GuiceArg(object):
 
-    def __init__(self, datatypes=None, annotation=None, scope=None):
-        self.datatypes = datatypes
+    def __init__(self, datatype=None, annotation=None, scope=None):
+        self.datatype = datatype
         self.annotation = annotation
         self.scope = scope
 
     def __eq__(self, other):
-        return (self.datatypes, self.annotation, self.scope
-                ) == (other.datatypes, other.annotation, other.scope)
+        return (self.datatype, self.annotation, self.scope
+                ) == (other.datatype, other.annotation, other.scope)
 
 
 class Provided(object):
@@ -49,7 +50,7 @@ def _validate_property_args(func, args, kwargs): # pylint: disable-msg=W0613
 
 
 def enclosing_frame(frame=None, level=2):
-    """Get an enclosing frame that skips DecoratorTools callback code"""
+    """Get an enclosing frame that skips decorator code"""
     frame = frame or sys._getframe(level)
     while frame.f_globals.get('__name__')==__name__: frame = frame.f_back
     return frame
@@ -57,9 +58,11 @@ def enclosing_frame(frame=None, level=2):
 
 def inject(*args, **kwargs):
 
-    annotation = kwargs.get('annotation')
-    if 'annotation' in kwargs:
-        del kwargs['annotation']
+    extension_annotations = {}
+    for k, v in kwargs.items():
+        if isinstance(v, ParameterExtension):
+            kwargs[k] = v.interface
+            extension_annotations[k] = v.annotation
 
     scope = kwargs.get('scope')
     if 'scope' in kwargs:
@@ -74,14 +77,20 @@ def inject(*args, **kwargs):
         if not guice_data:
             guice_data = class_locals['__guice__'] = GuiceData()
 
+        #TODO: warn if extension_annotations override actual annotations
+        annotations = getattr(func, '__guice_annotations__', {})
+        annotations.update(extension_annotations)
+
+        gmethod = dict((k, GuiceArg(v, annotations.get(k)))
+                       for k, v in kwargs.items())
+
         if func.__name__ == '__init__':
             _validate_func_args(func, args, kwargs)
-            guice_data.init = GuiceMethod(kwargs, annotation, scope)
+            guice_data.init = gmethod
         else:
             _validate_func_args(func, args, kwargs)
-            guice_data.methods[func.__name__] = GuiceMethod(
-                    kwargs, annotation, scope)
-    
+            guice_data.methods[func.__name__] = gmethod
+
         return func
 
     return _inject
@@ -119,3 +128,13 @@ class provide(object):
 
         decorated.__doc__ = method.__doc__
         return decorated
+
+
+class annotate(object):
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __call__(self, method):
+        method.__guice_annotations__ = self.kwargs
+        return method

@@ -24,12 +24,9 @@ class Injector(object):
         binding = self.get_binding(*key)
         if binding:
             provider = binding.scope.scope(key, binding.provider)
-            impl_class = provider.get()
+            return provider.get()
         else:
-            impl_class = cls
-
-        instance = self.create_object(impl_class)
-        return instance
+            return self.create_object(cls)
 
     def create_child(self, modules):
         """Create a new injector that inherits the state from this injector.
@@ -41,9 +38,6 @@ class Injector(object):
         return Injector(modules, binder=binder, stage=self._stage)
 
     def create_object(self, cls):
-        if not isinstance(cls, type):
-            return cls
-
         if not hasattr(cls, '__guice__'):
             return cls()
 
@@ -53,15 +47,16 @@ class Injector(object):
             instance = cls()
         else:
             kwargs = {}
-            for name, _type in guice_data.init.datatypes.items():
-                kwargs[name] = self.get_instance(
-                        _type, guice_data.init.annotation)
+            for name, guicearg in guice_data.init.items():
+                kwargs[name] = self.get_instance(guicearg.datatype,
+                                                 guicearg.annotation)
             instance = cls(**kwargs)
 
         for name, gm in guice_data.methods.items():
             kwargs = {}
-            for param, _type in gm.datatypes.items():
-                kwargs[param] = self.get_instance(_type, gm.annotation)
+            for param, guicearg in gm.items():
+                kwargs[param] = self.get_instance(guicearg.datatype,
+                                                  guicearg.annotation)
             getattr(instance, name)(**kwargs)
 
         return instance

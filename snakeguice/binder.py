@@ -38,16 +38,6 @@ class Binder(object):
             #TODO: add some validation
             provider = kwargs['to_instance']
             binding.provider = providers.InstanceProvider(provider)
-        elif 'to_eager_singleton' in kwargs:
-            #TODO: add some validation
-            cls = kwargs['to_eager_singleton']
-            binding.provider = providers.SimpleProvider(self._injector, cls)
-            binding.scope = scopes.SINGLETON
-        elif 'to_lazy_singleton' in kwargs:
-            #TODO: add some validation
-            cls = kwargs['to_lazy_singleton']
-            binding.provider = providers.SimpleProvider(self._injector, cls)
-            binding.scope = scopes.SINGLETON
 
         if 'annotated_with' in kwargs:
             annotations = kwargs['annotated_with']
