@@ -26,6 +26,14 @@ class RoutesBinder(object):
         kwargs['controller'] = key
         self.mapper.connect(*args, **kwargs)
 
+    def match(self, url, environ):
+        # TODO: i have a patch that makes this suck less - i need to submit it
+        old_environ, self.mapper.environ = self.mapper.environ, environ
+        try:
+            return self.mapper.match(url)
+        finally:
+            self.mapper.environ = old_environ
+
 
 class RoutesModule(object):
 
@@ -55,10 +63,7 @@ class Application(object):
 
         binder = self._injector.get_instance(RoutesBinder)
 
-        # TODO: i have a patch that makes this suck less - i need to submit it
-        binder.mapper.environ = environ
-
-        route = binder.mapper.match(environ['PATH_INFO'])
+        route = binder.match(environ['PATH_INFO'], environ)
         if not route:
             return webob.exc.HTTPNotFound
 
@@ -77,6 +82,5 @@ class Application(object):
             return webob.exc.HTTPNotFound
 
         action = getattr(controller, action)
-
         response = action(request, **route)
         return response(environ, start_response)
