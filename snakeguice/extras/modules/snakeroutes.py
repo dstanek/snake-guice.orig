@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import webob
 import routes
 
 
@@ -16,7 +17,7 @@ class RoutesBinder(object):
 
         if controller is None:
             raise TypeError('no controller specified')
-        
+
         if not isinstance(controller, type):
             raise TypeError('controller must be a class')
 
@@ -50,8 +51,7 @@ class Application(object):
         self._injector = injector
 
     def __call__(self, environ, start_response):
-        from webob import Request
-        request = Request(environ)
+        request = webob.Request(environ)
 
         binder = self._injector.get_instance(RoutesBinder)
 
@@ -77,7 +77,6 @@ class Application(object):
             return webob.exc.HTTPNotFound
 
         action = getattr(controller, action)
-        print action, request
 
         response = action(request, **route)
         return response(environ, start_response)
