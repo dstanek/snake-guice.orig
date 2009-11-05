@@ -4,8 +4,7 @@
 Tests for the singleton scope.py
 """
 
-from snakeguice import inject, Injected
-from snakeguice import Injector
+from snakeguice import inject, Injected, scopes, Injector, annotate
 
 import cls_heirarchy as ch
 
@@ -13,13 +12,33 @@ import cls_heirarchy as ch
 class TestSingletonScope(object):
 
     class DomainObject(object):
-        logger_a = inject(ch.Logger)
-        logger_b = inject(ch.Logger)
-        logger_c = inject(ch.Logger)
-        place_a = inject(ch.Place, annotation='hot')
-        place_b = inject(ch.Place, annotation='hot')
-        place_c = inject(ch.Place, annotation='cold')
-        place_d = inject(ch.Place, annotation='cold')
+
+        @inject(logger_a=ch.Logger, logger_b=ch.Logger, logger_c=ch.Logger)
+        def set_loggers(self, logger_a=Injected, logger_b=Injected,
+                logger_c=Injected):
+            self.logger_a = logger_a
+            self.logger_b = logger_b
+            self.logger_c = logger_c
+
+        @inject(place_a=ch.Place)
+        @annotate(place_a='hot')
+        def set_place_a(self, place_a):
+            self.place_a = place_a
+
+        @inject(place_b=ch.Place)
+        @annotate(place_b='hot')
+        def set_place_b(self, place_b):
+            self.place_b = place_b
+
+        @inject(place_c=ch.Place)
+        @annotate(place_c='cold')
+        def set_place_c(self, place_c):
+            self.place_c = place_c
+
+        @inject(place_d=ch.Place)
+        @annotate(place_d='cold')
+        def set_place_d(self, place_d):
+            self.place_d = place_d
 
     def assert_obj(self, obj):
         assert obj.logger_a is obj.logger_b
@@ -40,60 +59,18 @@ class TestSingletonScope(object):
         obj = Injector(MyModule()).get_instance(self.DomainObject)
         self.assert_obj(obj)
 
-    def test_eager_singleton(self):
-        class MyModule:
-            def configure(self, binder):
-                binder.bind(ch.Logger, to_eager_singleton=ch.ConcreteLogger)
-                binder.bind(ch.Place, annotated_with='hot',
-                        to_eager_singleton=ch.Beach)
-                binder.bind(ch.Place, annotated_with='cold',
-                        to_eager_singleton=ch.Glacier)
-
-        obj = Injector(MyModule()).get_instance(self.DomainObject)
-        self.assert_obj(obj)
-
-    def test_lazy_singleton(self):
-        class MyModule:
-            def configure(self, binder):
-                binder.bind(ch.Logger, to_lazy_singleton=ch.ConcreteLogger)
-                binder.bind(ch.Place, annotated_with='hot',
-                        to_lazy_singleton=ch.Beach)
-                binder.bind(ch.Place, annotated_with='cold',
-                        to_lazy_singleton=ch.Glacier)
-
-        obj = Injector(MyModule()).get_instance(self.DomainObject)
-        self.assert_obj(obj)
-
-    def _test_inject_into_eager_singleton(self):
+    def _test_inject_into_singleton(self):
         class MyLogger(object):
             hot_place = inject(ch.Place, annotation='hot')
             cold_place = inject(ch.Place, annotation='cold')
 
         class MyModule:
             def configure(self, binder):
-                binder.bind(ch.Logger, to_eager_singleton=MyLogger)
+                binder.bind(ch.Logger, to=MyLogger, in_scope=scopes.SINGLETON)
                 binder.bind(ch.Place, annotated_with='hot',
-                        to_eager_singleton=ch.Beach)
+                            to=ch.Beach, to_scope=scopes.SINGLETON)
                 binder.bind(ch.Place, annotated_with='cold',
-                        to_eager_singleton=ch.Glacier)
-
-        obj = Injector(MyModule()).get_instance(self.DomainObject)
-        self.assert_obj(obj)
-        assert obj.logger_a.hot_place is obj.place_a
-        assert obj.logger_a.cold_place is obj.place_c
-
-    def _test_inject_into_lazy_singleton(self):
-        class MyLogger(object):
-            hot_place = inject(ch.Place, annotation='hot')
-            cold_place = inject(ch.Place, annotation='cold')
-
-        class MyModule:
-            def configure(self, binder):
-                binder.bind(ch.Logger, to_lazy_singleton=MyLogger)
-                binder.bind(ch.Place, annotated_with='hot',
-                        to_lazy_singleton=ch.Beach)
-                binder.bind(ch.Place, annotated_with='cold',
-                        to_lazy_singleton=ch.Glacier)
+                            to=ch.Glacier, to_scope=scopes.SINGLETON)
 
         obj = Injector(MyModule()).get_instance(self.DomainObject)
         self.assert_obj(obj)

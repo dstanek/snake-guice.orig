@@ -24,3 +24,7 @@
   - use separate Scoped decorators bound to a Scope in a module
   - module overrides the decorated scope
   - document the enter and exit methods
+
+* Default providers
+  - inject providers without having to actually may a new XProvider type
+  - maybe something like @inject(apple=Provider(Apple))

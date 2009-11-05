@@ -1,8 +1,9 @@
+import sys
 import inspect
 
 from snakeguice.odict import OrderedDict
 from snakeguice.errors import DecorationError
-from peak.util.decorators import decorate_assignment
+from snakeguice.ext import ParameterExtension
 
 
 class GuiceData(object):
@@ -10,10 +11,9 @@ class GuiceData(object):
     def __init__(self):
         self.init = None
         self.methods = OrderedDict()
-        self.properties = OrderedDict()
 
 
-class GuiceProperty(object):
+class GuiceArg(object):
 
     def __init__(self, datatype=None, annotation=None, scope=None):
         self.datatype = datatype
@@ -25,27 +25,8 @@ class GuiceProperty(object):
                 ) == (other.datatype, other.annotation, other.scope)
 
 
-class GuiceMethod(object):
-
-    def __init__(self, datatypes=None, annotation=None, scope=None):
-        self.datatypes = datatypes
-        self.annotation = annotation
-        self.scope = scope
-
-    def __eq__(self, other):
-        return (self.datatypes, self.annotation, self.scope
-                ) == (other.datatypes, other.annotation, other.scope)
-
-
-class InjectedProperty(object):
-
-    def __init__(self, name):
-        self.name = name
-
-
 class Provided(object):
     """ Interface for argument to be provided. """
-    pass
 
 
 def _validate_func_args(func, args, kwargs):
@@ -68,37 +49,52 @@ def _validate_property_args(func, args, kwargs): # pylint: disable-msg=W0613
                 'when decorating a property')
 
 
+def enclosing_frame(frame=None, level=2):
+    """Get an enclosing frame that skips decorator code"""
+    frame = frame or sys._getframe(level)
+    while frame.f_globals.get('__name__')==__name__: frame = frame.f_back
+    return frame
+
+
 def inject(*args, **kwargs):
 
-    annotation = kwargs.get('annotation')
-    if 'annotation' in kwargs:
-        del kwargs['annotation']
+    extension_annotations = {}
+    for k, v in kwargs.items():
+        if isinstance(v, ParameterExtension):
+            kwargs[k] = v.interface
+            extension_annotations[k] = v.annotation
 
     scope = kwargs.get('scope')
     if 'scope' in kwargs:
         del kwargs['scope']
 
-    def callback(frame, name, func, old_locals): # pylint: disable-msg=W0613
-        class_locals = frame.f_locals
+    def _inject(func):
+        class_locals = enclosing_frame().f_locals
+        #if not hasattr(func, 'im_class'):
+        #    raise DecorationError("snake-guice can't inject into functions")
 
         guice_data = class_locals.get('__guice__')
         if not guice_data:
             guice_data = class_locals['__guice__'] = GuiceData()
 
-        if func.__module__ == 'peak.util.decorators':
-            _validate_property_args(func, args, kwargs)
-            guice_data.properties[name] = GuiceProperty(args[0], annotation, scope)
-            return InjectedProperty(name)
-        elif name == '__init__':
+        #TODO: warn if extension_annotations override actual annotations
+        annotations = getattr(func, '__guice_annotations__', {})
+        annotations.update(extension_annotations)
+
+        gmethod = dict((k, GuiceArg(v, annotations.get(k)))
+                       for k, v in kwargs.items())
+
+        if func.__name__ == '__init__':
             _validate_func_args(func, args, kwargs)
-            guice_data.init = GuiceMethod(kwargs, annotation, scope)
-            return func
+            guice_data.init = gmethod
         else:
             _validate_func_args(func, args, kwargs)
-            guice_data.methods[name] = GuiceMethod(kwargs, annotation, scope)
-            return func
+            guice_data.methods[func.__name__] = gmethod
 
-    return decorate_assignment(callback, depth=2)
+        return func
+
+    return _inject
+
 
 class provide(object):
     """ Decorator for method with arguments to be provided by DI at runtime.
@@ -132,3 +128,13 @@ class provide(object):
 
         decorated.__doc__ = method.__doc__
         return decorated
+
+
+class annotate(object):
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __call__(self, method):
+        method.__guice_annotations__ = self.kwargs
+        return method

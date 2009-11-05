@@ -1,6 +1,6 @@
 from nose.tools import raises
 from snakeguice.errors import DecorationError
-from snakeguice.decorators import inject, GuiceProperty, GuiceMethod
+from snakeguice.decorators import inject, GuiceArg, annotate
 from snakeguice.decorators import provide, Provided
 
 
@@ -13,9 +13,8 @@ def test_inject_init():
         def __init__(self, x):
             pass
     
-    assert SomeClass.__guice__.init == GuiceMethod({'x': int})
+    assert SomeClass.__guice__.init == {'x': GuiceArg(int)}
     assert len(SomeClass.__guice__.methods) == 0
-    assert len(SomeClass.__guice__.properties) == 0
 
 
 def test_inject_methods():
@@ -29,11 +28,10 @@ def test_inject_methods():
 
     assert SomeClass.__guice__.init is None
     assert SomeClass.__guice__.methods.items() == [
-            ('go', GuiceMethod({'y': float})),
+            ('go', {'y': GuiceArg(float)}),
     ]
-    assert len(SomeClass.__guice__.properties) == 0
 
-def test_inject_provider():
+def __test_inject_provider():
     """ Using property injection, and then auto-providing instance to
         a method.
     """
@@ -69,29 +67,15 @@ def test_inject_provider():
     status = some_class.get_some_status()
     assert status == 'something:provided'
 
-def test_inject_properties():
-    """Using the inject decorator on a property."""
-
-    class SomeClass(object):
-        prop_a = inject(int)
-        prop_b = inject(object)
-
-    assert SomeClass.__guice__.init is None
-    assert len(SomeClass.__guice__.methods) == 0
-    assert SomeClass.__guice__.properties.items() == [
-            ('prop_a', GuiceProperty(int)),
-            ('prop_b', GuiceProperty(object)),
-    ]
-
 
 def test_inject_all():
     """Using combinations of inject including annotations."""
+    #TODO: add annotation stuff again
 
     class SomeClass(object):
-        prop_a = inject(int)
-        prop_b = inject(object, annotation='test')
     
-        @inject(a=bool, b=int, c=float, annotation='test')
+        @inject(a=bool, b=int, c=float)
+        @annotate(a='free', b='paid')
         def __init__(self, a, b, c):
             pass
     
@@ -99,20 +83,18 @@ def test_inject_all():
         def go(self, y):
             pass
 
-        @inject(x=int, y=int, z=object, annotation='test')
+        @inject(x=int, y=int, z=object)
+        @annotate(y='old', z='new')
         def stop(self, x, y, z):
             pass
 
-    assert (SomeClass.__guice__.init ==
-            GuiceMethod({'a': bool, 'b': int, 'c': float}, 'test'))
+    assert (SomeClass.__guice__.init == 
+            {'a': GuiceArg(bool, 'free'), 'b': GuiceArg(int, 'paid'), 'c': GuiceArg(float)})
+    print SomeClass.__guice__.methods.items()
     assert SomeClass.__guice__.methods.items() == [
-            ('go', GuiceMethod({'y': float})),
-            ('stop', GuiceMethod({'x': int, 'y': int, 'z': object}, 'test')),
-    ]
-    assert SomeClass.__guice__.properties.items() == [
-            ('prop_a', GuiceProperty(int)),
-            ('prop_b', GuiceProperty(object, 'test')),
-    ]
+            ('go', {'y': GuiceArg(float)}),
+            ('stop', 
+             {'x': GuiceArg(int), 'y': GuiceArg(int, 'old'), 'z': GuiceArg(object, 'new')})]
 
 
 @raises(DecorationError)
@@ -155,20 +137,3 @@ def test_incorrect_methods1():
 #        @inject
 #        def f(self, x, y):
 #            pass
-
-@raises(DecorationError)
-def test_incorrect_properties0():
-    """Ensure inject is validating property calls."""
-
-    class SomeClass(object):
-        prop_a = inject(prop_a=int)
-        prop_b = inject(object)
-
-
-@raises(DecorationError)
-def test_incorrect_properties1():
-    """Ensure inject is validating property calls."""
-
-    class SomeClass(object):
-        prop_a = inject(int, prop_a=int)
-        prop_b = inject(object)
