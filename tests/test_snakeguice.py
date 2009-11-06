@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 import nose
-import pymock
-import mocker
-from unittest import TestCase
 
 import snakeguice as sg
 
@@ -25,10 +22,10 @@ class EvilPerson(Person):
 # tests for the Binder class
 #
 
-class _TestBinder(TestCase):
+class _TestBinder(object):
     """Tests for the Binder class."""
 
-    def setUp(self):
+    def setup(self):
         self.binder = sg.Binder()
 
     def test_add_error(self):
@@ -56,10 +53,10 @@ class _TestBinder(TestCase):
         assert isinstance(binding, sg.Binding)
 
 
-class _TestBinding(TestCase):
+class _TestBinding(object):
     """Test the Binding class."""
 
-    def setUp(self):
+    def setup(self):
         self.binding = sg.Binding(Person)
 
     def check_keys(self, *keys):
