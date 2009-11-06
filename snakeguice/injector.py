@@ -1,7 +1,37 @@
 #!/usr/bin/env python
 
+import inspect
+
 from snakeguice.binder import Binder
 from snakeguice.decorators import GuiceData as _GuiceData
+
+
+class ProvidesBinderHelper(object):
+
+    def __init__(self, injector):
+        self._injector = injector
+
+    def bind_providers(self, module, binder):
+        members = [m for m in inspect.getmembers(module)
+                   if inspect.ismethod(m[1])]
+        for name, method in members:
+            if hasattr(method.im_func, '__guice_provides__'):
+                type = method.__guice_provides__
+                provider = self._build_provider(module, type, method)
+                binder.bind(type, to_provider=provider)
+
+    def _build_provider(self, module, type, method):
+        helper_self = self
+        class GenericProvider(object):
+            def get(self):
+                kwargs = {}
+                method_name = method.__name__
+                injectable_args = module.__class__.__guice__.methods.get(method_name)
+                for name, guicearg in injectable_args.items():
+                    kwargs[name] = helper_self._injector.get_instance(
+                            guicearg.datatype, guicearg.annotation)
+                return method(**kwargs)
+        return GenericProvider
 
 
 class Injector(object):
@@ -13,8 +43,10 @@ class Injector(object):
         self._binder = binder or Binder(self)
         self._stage = stage
 
+        provides_helper = ProvidesBinderHelper(self)
         for module in modules:
             module.configure(self._binder)
+            provides_helper.bind_providers(module, self._binder)
 
     def get_binding(self, _class, annotation=None):
         return self._binder.get_binding(_class, annotation)

@@ -8,7 +8,7 @@ Examples of using the snakeguice API.
 
 
 from snakeguice import inject, Injected, ParameterInterceptor, annotate
-from snakeguice import Injector
+from snakeguice import Injector, provides
 
 import cls_heirarchy as ch
 
@@ -206,6 +206,32 @@ class TestMethodInterceptors(object):
 
         obj = self.injector.get_instance(DomainObject)
         obj.intercept_me()
+
+
+class test_provides_decorator(object):
+
+    def setup(self):
+
+        class HappyPerson(object):
+
+            def get_home_location(self):
+                return ch.Beach()
+
+        class PeopleModule(object):
+
+            def configure(self, binder):
+                binder.bind(ch.Person, to=HappyPerson)
+
+            @provides(ch.Place)
+            @inject(person=ch.Person)
+            def provide_a_persons_home_location(self, person):
+                return person.get_home_location()
+
+        self.injector = Injector(PeopleModule())
+        self.location = self.injector.get_instance(ch.Place)
+
+    def test_the_location_was_injected(self):
+        assert isinstance(self.location, ch.Beach)
 
 #TODO: constant injection
 

@@ -138,3 +138,13 @@ class annotate(object):
     def __call__(self, method):
         method.__guice_annotations__ = self.kwargs
         return method
+
+
+class provides(object):
+
+    def __init__(self, type):
+        self._type = type
+
+    def __call__(self, method):
+        method.__guice_provides__ = self._type
+        return method
