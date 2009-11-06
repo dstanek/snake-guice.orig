@@ -40,15 +40,6 @@ def _validate_func_args(func, args, kwargs):
                 'not match the decorated function')
 
 
-def _validate_property_args(func, args, kwargs): # pylint: disable-msg=W0613
-    """Validate decorator args when used with a class attribute."""
-    if len(args) != 1:
-        raise DecorationError('only 1 decorator argument allowed')
-    if kwargs:
-        raise DecorationError('keyword args cannot be specified '
-                'when decorating a property')
-
-
 def enclosing_frame(frame=None, level=2):
     """Get an enclosing frame that skips decorator code"""
     frame = frame or sys._getframe(level)
