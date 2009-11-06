@@ -1,4 +1,5 @@
 from nose.tools import raises
+
 from snakeguice.errors import DecorationError
 from snakeguice.decorators import inject, GuiceArg, annotate
 from snakeguice.decorators import provide, Provided
@@ -8,11 +9,11 @@ def test_inject_init():
     """Using the inject decorator on a constructor."""
 
     class SomeClass(object):
-    
+
         @inject(x=int)
         def __init__(self, x):
             pass
-    
+
     assert SomeClass.__guice__.init == {'x': GuiceArg(int)}
     assert len(SomeClass.__guice__.methods) == 0
 
@@ -21,7 +22,7 @@ def test_inject_methods():
     """Using the inject decorator on a method."""
 
     class SomeClass(object):
-    
+
         @inject(y=float)
         def go(self, y):
             pass
@@ -63,7 +64,7 @@ def __test_inject_provider():
     inj = injector.Injector(Modules())
     some_class = inj.get_instance(SomeClass)
     assert isinstance(some_class, SomeClass)
-    
+
     status = some_class.get_some_status()
     assert status == 'something:provided'
 
@@ -73,12 +74,12 @@ def test_inject_all():
     #TODO: add annotation stuff again
 
     class SomeClass(object):
-    
+
         @inject(a=bool, b=int, c=float)
         @annotate(a='free', b='paid')
         def __init__(self, a, b, c):
             pass
-    
+
         @inject(y=float)
         def go(self, y):
             pass
@@ -88,13 +89,17 @@ def test_inject_all():
         def stop(self, x, y, z):
             pass
 
-    assert (SomeClass.__guice__.init == 
-            {'a': GuiceArg(bool, 'free'), 'b': GuiceArg(int, 'paid'), 'c': GuiceArg(float)})
+    assert (SomeClass.__guice__.init ==
+            {'a': GuiceArg(bool, 'free'),
+             'b': GuiceArg(int, 'paid'),
+             'c': GuiceArg(float)})
     print SomeClass.__guice__.methods.items()
     assert SomeClass.__guice__.methods.items() == [
             ('go', {'y': GuiceArg(float)}),
-            ('stop', 
-             {'x': GuiceArg(int), 'y': GuiceArg(int, 'old'), 'z': GuiceArg(object, 'new')})]
+            ('stop',
+             {'x': GuiceArg(int),
+              'y': GuiceArg(int, 'old'),
+              'z': GuiceArg(object, 'new')})]
 
 
 @raises(DecorationError)
@@ -102,7 +107,7 @@ def test_incorrect_methods0():
     """Ensure inject is validating method calls."""
 
     class SomeClass(object):
-        
+
         @inject(int, y=int)
         def f(self, x, y):
             pass
@@ -112,7 +117,7 @@ def test_incorrect_methods1():
     """Ensure inject is validating method calls."""
 
     class SomeClass(object):
-        
+
         @inject(z=int, y=int)
         def f(self, x, y):
             pass
@@ -122,7 +127,7 @@ def test_incorrect_methods1():
     """Ensure inject is validating method calls."""
 
     class SomeClass(object):
-        
+
         @inject(y=int)
         def f(self, x, y):
             pass
