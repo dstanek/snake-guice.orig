@@ -2,7 +2,6 @@ import sys
 import inspect
 
 from snakeguice.odict import OrderedDict
-from snakeguice.errors import DecorationError
 from snakeguice.ext import ParameterExtension
 
 
@@ -29,15 +28,13 @@ class Provided(object):
     """ Interface for argument to be provided. """
 
 
-def _validate_func_args(func, args, kwargs):
+def _validate_func_args(func, kwargs):
     """Validate decorator args when used to decorate a function."""
-    if args:
-        raise DecorationError('args cannot be passed into the decorator')
 
     args, varargs, varkw, defaults = inspect.getargspec(func)
     if set(kwargs.keys()) != set(args[1:]): # chop off self
-        raise DecorationError('the kwargs passed into the docorator do '
-                'not match the decorated function')
+        raise TypeError("decorator kwargs do not match %s()'s kwargs"
+                        % func.__name__)
 
 
 def enclosing_frame(frame=None, level=2):
@@ -47,7 +44,7 @@ def enclosing_frame(frame=None, level=2):
     return frame
 
 
-def inject(*args, **kwargs):
+def inject(**kwargs):
 
     extension_annotations = {}
     for k, v in kwargs.items():
@@ -61,8 +58,6 @@ def inject(*args, **kwargs):
 
     def _inject(func):
         class_locals = enclosing_frame().f_locals
-        #if not hasattr(func, 'im_class'):
-        #    raise DecorationError("snake-guice can't inject into functions")
 
         guice_data = class_locals.get('__guice__')
         if not guice_data:
@@ -76,10 +71,10 @@ def inject(*args, **kwargs):
                        for k, v in kwargs.items())
 
         if func.__name__ == '__init__':
-            _validate_func_args(func, args, kwargs)
+            _validate_func_args(func, kwargs)
             guice_data.init = gmethod
         else:
-            _validate_func_args(func, args, kwargs)
+            _validate_func_args(func, kwargs)
             guice_data.methods[func.__name__] = gmethod
 
         return func

@@ -1,6 +1,7 @@
+"""Behavioral tests for the snake-guice decorators."""
+
 from nose.tools import raises
 
-from snakeguice.errors import DecorationError
 from snakeguice.decorators import inject, GuiceArg, annotate
 from snakeguice.decorators import provide, Provided
 
@@ -102,7 +103,7 @@ def test_inject_all():
               'z': GuiceArg(object, 'new')})]
 
 
-@raises(DecorationError)
+@raises(TypeError)
 def test_incorrect_methods0():
     """Ensure inject is validating method calls."""
 
@@ -112,7 +113,7 @@ def test_incorrect_methods0():
         def f(self, x, y):
             pass
 
-@raises(DecorationError)
+@raises(TypeError)
 def test_incorrect_methods1():
     """Ensure inject is validating method calls."""
 
@@ -122,7 +123,7 @@ def test_incorrect_methods1():
         def f(self, x, y):
             pass
 
-@raises(DecorationError)
+@raises(TypeError)
 def test_incorrect_methods1():
     """Ensure inject is validating method calls."""
 
@@ -132,13 +133,12 @@ def test_incorrect_methods1():
         def f(self, x, y):
             pass
 
-#@raises(DecorationError)
-# TODO: make a test case for a bare inject
-#def test_incorrect_methods2():
-#    """Ensure inject is validating method calls."""
-#
-#    class SomeClass(object):
-#        
-#        @inject
-#        def f(self, x, y):
-#            pass
+@raises(TypeError)
+def test_incorrect_methods2():
+    """Ensure inject is validating method calls."""
+
+    class SomeClass(object):
+
+        @inject
+        def f(self, x, y):
+            pass

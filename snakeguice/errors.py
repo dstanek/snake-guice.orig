@@ -9,7 +9,3 @@ class SnakeGuiceError(Exception):
 
 class BindingError(SnakeGuiceError):
     """Raised when an issue in the binding rules is found."""
-
-
-class DecorationError(SnakeGuiceError):
-    """Raised when a decoration error is encountered in a class."""
