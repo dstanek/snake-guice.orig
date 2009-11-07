@@ -13,11 +13,14 @@ from snakeguice import Injector, provides
 import cls_heirarchy as ch
 
 
-def test_default_binding():
-    """Not binding to anything implicitly binds to oneself."""
-    injector = Injector([])
-    person = injector.get_instance(ch.Person)
-    assert isinstance(person, ch.Person)
+class given_an_injector(object):
+
+    def when_asking_for_a_class_not_bound_by_a_module(self):
+        injector = Injector([])
+        self.person = injector.get_instance(ch.Person)
+
+    def then_an_instance_of_it_is_implicitly_bound(self):
+        assert isinstance(self.person, ch.Person)
 
 
 def test_injector_simple():
