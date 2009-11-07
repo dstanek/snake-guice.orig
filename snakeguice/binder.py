@@ -1,7 +1,20 @@
 #!/usr/bin/env python
 
-
 from snakeguice import errors, providers, scopes
+
+
+class Key(object):
+
+    def __init__(self, interface, annotation=None):
+        self._interface = interface
+        self._annotation = annotation
+
+    def __hash__(self):
+        return hash((self._interface, self._annotation))
+
+    def __eq__(self, other):
+        return (self._interface == other._interface and
+                self._annotation == other._annotation)
 
 
 class Binder(object):
@@ -50,19 +63,14 @@ class Binder(object):
 
         if binding.annotations:
             for annotation in binding.annotations:
-                key = (binding.interface, annotation)
+                key = Key(binding.interface, annotation)
                 self._binding_map[key] = binding
         else:
-            key = (binding.interface, None)
+            key = Key(binding.interface, None)
             self._binding_map[key] = binding
 
-    def get_binding(self, _class, annotation=None):
-        key = (_class, annotation)
-        binding = self._binding_map.get(key)
-        if not binding:
-            key = (_class, None)
-            binding = self._binding_map.get(key)
-        return binding
+    def get_binding(self, key):
+        return self._binding_map.get(key)
 
 
 class Binding(object):

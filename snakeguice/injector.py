@@ -2,7 +2,7 @@
 
 import inspect
 
-from snakeguice.binder import Binder
+from snakeguice.binder import Binder, Key
 from snakeguice.decorators import GuiceData as _GuiceData
 
 
@@ -48,12 +48,12 @@ class Injector(object):
             module.configure(self._binder)
             provides_helper.bind_providers(module, self._binder)
 
-    def get_binding(self, _class, annotation=None):
-        return self._binder.get_binding(_class, annotation)
+    def get_binding(self, key):
+        return self._binder.get_binding(key)
 
     def get_instance(self, cls, annotation=None):
-        key = (cls, annotation)
-        binding = self.get_binding(*key)
+        key = Key(cls, annotation)
+        binding = self.get_binding(key)
         if binding:
             provider = binding.scope.scope(key, binding.provider)
             return provider.get()
