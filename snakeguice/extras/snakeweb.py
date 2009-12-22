@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import webob
+from webob import Request, Response
+from webob.exc import HTTPNotFound
 import routes
 
 
@@ -59,18 +60,18 @@ class Application(object):
         self._injector = injector
 
     def __call__(self, environ, start_response):
-        request = webob.Request(environ)
+        request = Request(environ)
 
         binder = self._injector.get_instance(RoutesBinder)
 
         route = binder.match(environ['PATH_INFO'], environ)
         if not route:
-            return webob.exc.HTTPNotFound
+            return HTTPNotFound('no motching route')(environ, start_response)
 
         controller = route.pop('controller')
         controller = binder.controller_map.get(controller)
         if not controller:
-            return webob.exc.HTTPNotFound
+            return HTTPNotFound()(environ, start_response)
 
         controller = self._injector.get_instance(controller)
         try:
@@ -79,7 +80,7 @@ class Application(object):
             action = 'index'
 
         if not hasattr(controller, action):
-            return webob.exc.HTTPNotFound
+            return HTTPNotFound()(environ, start_response)
 
         action = getattr(controller, action)
         response = action(request, **route)
