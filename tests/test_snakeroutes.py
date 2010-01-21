@@ -1,15 +1,15 @@
 from nose.tools import raises
 from dingus import Dingus, DingusTestCase
 
-from snakeguice.extras.modules import snakeroutes
+from snakeguice.extras import snakeweb
 
 
-class TestRoutesModuleSetup(DingusTestCase(snakeroutes.RoutesModule)):
+class TestRoutesModuleSetup(DingusTestCase(snakeweb.RoutesModule)):
 
     def setup(self):
         super(TestRoutesModuleSetup, self).setup()
 
-        class MyRoutesModule(snakeroutes.RoutesModule):
+        class MyRoutesModule(snakeweb.RoutesModule):
             configure_mapper = Dingus()
 
         self.binder = Dingus()
@@ -18,30 +18,30 @@ class TestRoutesModuleSetup(DingusTestCase(snakeroutes.RoutesModule)):
 
     def test_configure_mapper_is_called_with_a_mapper(self):
         assert self.module.configure_mapper.calls('()',
-                snakeroutes.RoutesBinder.return_value)
+                snakeweb.RoutesBinder.return_value)
 
     def test_real_routes_mapper_was_created(self):
-        assert snakeroutes.routes.Mapper.calls()
+        assert snakeweb.routes.Mapper.calls()
 
 
-class TestRoutesModuleIsAbstract(DingusTestCase(snakeroutes.RoutesModule)):
+class TestRoutesModuleIsAbstract(DingusTestCase(snakeweb.RoutesModule)):
 
     def setup(self):
         super(TestRoutesModuleIsAbstract, self).setup()
-        self.module = snakeroutes.RoutesModule()
+        self.module = snakeweb.RoutesModule()
 
     @raises(NotImplementedError)
     def test_configure_mapper_is_not_implemented(self):
         self.module.configure(Dingus())
 
 
-class BaseTestRoutesBinder(DingusTestCase(snakeroutes.RoutesBinder)):
+class BaseTestRoutesBinder(DingusTestCase(snakeweb.RoutesBinder)):
 
     def setup(self):
         super(BaseTestRoutesBinder, self).setup()
         self.routes_mapper = Dingus()
         self.annotation = Dingus()
-        self.binder = snakeroutes.RoutesBinder(self.routes_mapper, self.annotation)
+        self.binder = snakeweb.RoutesBinder(self.routes_mapper, self.annotation)
 
 
 class TestRoutesBinderConnectWithInvalidControllers(BaseTestRoutesBinder):
