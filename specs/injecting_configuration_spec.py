@@ -8,13 +8,13 @@ from snakeguice.config import ConfigParserLoader
 
 def describe_injecting_configuration_with_the_default_adapter():
 
-    class MyLogger(object):
+    class MyWebService(object):
 
-        @inject(filename=Config('config.ini:logger:filename'),
-                loglevel=Config('config.ini:logger:loglevel'))
-        def __init__(self, filename=Injected, loglevel=Injected):
-            self.filename = filename
-            self.loglevel = loglevel
+        @inject(ipaddress=Config('config.ini:webservice:ipaddress'),
+                port=Config('config.ini:webservice:port'))
+        def __init__(self, ipaddress=Injected, port=Injected):
+            self.ipaddress = ipaddress
+            self.port = port
 
     class ConfigModule(object):
 
@@ -23,8 +23,8 @@ def describe_injecting_configuration_with_the_default_adapter():
             config_loader.bind_configuration(binder)
 
     injector = Injector(ConfigModule())
-    logger = injector.get_instance(MyLogger)
+    webservice = injector.get_instance(MyWebService)
 
     def config_values_are_being_injected():
-        assert logger.filename == '/var/log/guice.log'
-        assert logger.loglevel == 'INFO'
+        assert webservice.ipaddress == '127.0.0.1'
+        assert webservice.port == '9999'
