@@ -57,13 +57,13 @@ try:
     import nose
     @task
     @cmdopts([('coverage', 'c', 'Generate figleaf sections.')])
-    def test():
+    def tests():
         """Run unit tests with Nose."""
-        if options.get('test', {}).get('coverage', 0):
+        if options.get('tests', {}).get('coverage', 0):
             import figleaf
             figleaf.start()
         nose.run(argv=['nosetests'])
-        if options.get('test', {}).get('coverage', 0):
+        if options.get('tests', {}).get('coverage', 0):
             figleaf.stop()
             figleaf.write_coverage('.figleaf')
 except ImportError:
