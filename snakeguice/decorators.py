@@ -2,7 +2,6 @@ import sys
 import inspect
 
 from snakeguice.odict import OrderedDict
-from snakeguice.ext import ParameterExtension
 
 
 class GuiceData(object):
@@ -46,12 +45,6 @@ def enclosing_frame(frame=None, level=2):
 
 def inject(**kwargs):
 
-    extension_annotations = {}
-    for k, v in kwargs.items():
-        if isinstance(v, ParameterExtension):
-            kwargs[k] = v.interface
-            extension_annotations[k] = v.annotation
-
     scope = kwargs.get('scope')
     if 'scope' in kwargs:
         del kwargs['scope']
@@ -63,9 +56,7 @@ def inject(**kwargs):
         if not guice_data:
             guice_data = class_locals['__guice__'] = GuiceData()
 
-        #TODO: warn if extension_annotations override actual annotations
         annotations = getattr(func, '__guice_annotations__', {})
-        annotations.update(extension_annotations)
 
         gmethod = dict((k, GuiceArg(v, annotations.get(k)))
                        for k, v in kwargs.items())
