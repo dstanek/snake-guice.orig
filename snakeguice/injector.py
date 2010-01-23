@@ -26,10 +26,11 @@ class ProvidesBinderHelper(object):
             def get(self):
                 kwargs = {}
                 method_name = method.__name__
-                injectable_args = module.__class__.__guice__.methods.get(method_name)
-                for name, guicearg in injectable_args.items():
-                    kwargs[name] = helper_self._injector.get_instance(
-                            guicearg.datatype, guicearg.annotation)
+                if hasattr(module, '__guice__'):
+                    injectable_args = module.__guice__.methods.get(method_name, {})
+                    for name, guicearg in injectable_args.items():
+                        kwargs[name] = helper_self._injector.get_instance(
+                                guicearg.datatype, guicearg.annotation)
                 return method(**kwargs)
         return GenericProvider
 
@@ -46,6 +47,7 @@ class Injector(object):
         provides_helper = ProvidesBinderHelper(self)
         for module in modules:
             module.configure(self._binder)
+            open('/tmp/dstanek.log', 'a').write('M %s\n' % (module))
             provides_helper.bind_providers(module, self._binder)
 
     def get_binding(self, key):
