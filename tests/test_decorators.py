@@ -113,6 +113,7 @@ def test_incorrect_methods0():
         def f(self, x, y):
             pass
 
+
 @raises(TypeError)
 def test_incorrect_methods1():
     """Ensure inject is validating method calls."""
@@ -123,8 +124,9 @@ def test_incorrect_methods1():
         def f(self, x, y):
             pass
 
+
 @raises(TypeError)
-def test_incorrect_methods1():
+def test_incorrect_methods2():
     """Ensure inject is validating method calls."""
 
     class SomeClass(object):
@@ -133,8 +135,9 @@ def test_incorrect_methods1():
         def f(self, x, y):
             pass
 
+
 @raises(TypeError)
-def test_incorrect_methods2():
+def test_incorrect_methods3():
     """Ensure inject is validating method calls."""
 
     class SomeClass(object):
