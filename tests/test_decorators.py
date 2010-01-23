@@ -145,3 +145,15 @@ def test_incorrect_methods3():
         @inject
         def f(self, x, y):
             pass
+
+
+@raises(Exception)
+def test_order_of_annotate():
+    """The annotate decorator must me applied to a method before inject."""
+
+    class SomeClass(object):
+
+        @annotate(a='large')
+        @inject(a=int)
+        def f(self, a):
+            pass
