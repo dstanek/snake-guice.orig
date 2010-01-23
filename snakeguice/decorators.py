@@ -1,14 +1,12 @@
 import sys
 import inspect
 
-from snakeguice.odict import OrderedDict
-
 
 class GuiceData(object):
 
     def __init__(self):
         self.init = None
-        self.methods = OrderedDict()
+        self.methods = {}
 
 
 class GuiceArg(object):
