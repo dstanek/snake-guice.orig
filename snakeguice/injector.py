@@ -26,11 +26,11 @@ class ProvidesBinderHelper(object):
             def get(self):
                 kwargs = {}
                 method_name = method.__name__
-                if hasattr(module, '__guice__'):
-                    injectable_args = module.__guice__.methods.get(method_name, {})
-                    for name, guicearg in injectable_args.items():
-                        kwargs[name] = helper_self._injector.get_instance(
-                                guicearg.datatype, guicearg.annotation)
+                guice_data = _GuiceData.from_class(module.__class__)
+                injectable_args = guice_data.methods.get(method_name, {})
+                for name, guicearg in injectable_args.items():
+                    kwargs[name] = helper_self._injector.get_instance(
+                            guicearg.datatype, guicearg.annotation)
                 return method(**kwargs)
         return GenericProvider
 
@@ -47,7 +47,6 @@ class Injector(object):
         provides_helper = ProvidesBinderHelper(self)
         for module in modules:
             module.configure(self._binder)
-            open('/tmp/dstanek.log', 'a').write('M %s\n' % (module))
             provides_helper.bind_providers(module, self._binder)
 
     def get_binding(self, key):
@@ -72,10 +71,7 @@ class Injector(object):
         return Injector(modules, binder=binder, stage=self._stage)
 
     def create_object(self, cls):
-        if not hasattr(cls, '__guice__'):
-            return cls()
-
-        guice_data = self._get_guice_data(cls)
+        guice_data = _GuiceData.composite_from_class(cls)
 
         if not guice_data.init:
             instance = cls()
@@ -94,16 +90,3 @@ class Injector(object):
             getattr(instance, name)(**kwargs)
 
         return instance
-
-    def _get_guice_data(self, cls):
-        guice_data = _GuiceData()
-
-        for cls in cls.__mro__[-1::-1]:
-            if hasattr(cls, '__guice__'):
-                for name, method in cls.__guice__.methods.items():
-                    guice_data.methods[name] = method
-
-        if hasattr(cls, '__guice__'):
-            guice_data.init = cls.__guice__.init
-
-        return guice_data

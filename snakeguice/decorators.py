@@ -8,6 +8,33 @@ class GuiceData(object):
         self.init = None
         self.methods = {}
 
+    @classmethod
+    def from_class(cls, target_class):
+        if '__guice__' not in target_class.__dict__:
+            guice_data = cls()
+            try:
+                target_class.__guice__ = guice_data
+            except TypeError: # special case for builtin/extension types
+                return guice_data
+        return target_class.__guice__
+
+    @classmethod
+    def composite_from_class(cls, target_class):
+        composite_data = GuiceData()
+        for _cls in target_class.__mro__[-1::-1]:
+            data = GuiceData.from_class(_cls)
+            for name, method in data.methods.items():
+                composite_data.methods[name] = method
+
+        composite_data.init = data.init # only the last class in the chain
+        return composite_data
+
+    @classmethod
+    def from_class_dict(cls, class_dict):
+        if '__guice__' not in class_dict:
+            class_dict['__guice__'] = cls()
+        return class_dict['__guice__']
+
 
 class GuiceArg(object):
 
@@ -50,9 +77,7 @@ def inject(**kwargs):
     def _inject(func):
         class_locals = enclosing_frame().f_locals
 
-        guice_data = class_locals.get('__guice__')
-        if not guice_data:
-            guice_data = class_locals['__guice__'] = GuiceData()
+        guice_data = GuiceData.from_class_dict(class_locals)
 
         annotations = getattr(func, '__guice_annotations__', {})
 

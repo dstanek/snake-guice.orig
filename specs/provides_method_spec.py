@@ -28,12 +28,16 @@ def describe_provider_methods():
 
     def describe_providing_an_object_with_dependencies():
         class SomeInterface(object): pass
+
         class SomeImpl(object):
+
             def __init__(self, other_dep):
                 self.other_dep = other_dep
+
         class SomeOtherDependency(object): pass
 
         class Module(object):
+
             @provides(SomeInterface)
             @inject(other_dep=SomeOtherDependency)
             def aSomeInterfaceFactory(self, other_dep):
