@@ -37,7 +37,6 @@ class Binder(object):
 
         binding = Binding()
         binding.interface = _class
-        binding.scope = scopes.NO_SCOPE
 
         if 'to' in kwargs:
             #TODO: add some validation
@@ -52,22 +51,11 @@ class Binder(object):
             provider = kwargs['to_instance']
             binding.provider = providers.InstanceProvider(provider)
 
-        if 'annotated_with' in kwargs:
-            annotations = kwargs['annotated_with']
-            if not isinstance(annotations, list):
-                annotations = [annotations]
-            binding.annotations = annotations
+        binding.annotation = kwargs.get('annotated_with', None)
+        binding.scope = kwargs.get('in_scope', scopes.NO_SCOPE)
 
-        if 'in_scope' in kwargs:
-            binding.scope = kwargs['in_scope']
-
-        if binding.annotations:
-            for annotation in binding.annotations:
-                key = Key(binding.interface, annotation)
-                self._binding_map[key] = binding
-        else:
-            key = Key(binding.interface, None)
-            self._binding_map[key] = binding
+        key = Key(binding.interface, binding.annotation)
+        self._binding_map[key] = binding
 
     def get_binding(self, key):
         return self._binding_map.get(key)
@@ -77,6 +65,6 @@ class Binding(object):
 
     def __init__(self):
         self.interface = None
-        self.annotations = []
+        self.annotation = None
         self.provider = None
         self.scope = None
