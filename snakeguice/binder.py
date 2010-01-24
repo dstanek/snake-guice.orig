@@ -24,8 +24,8 @@ class Binder(object):
         self._errors = []
         self._binding_map = binding_map or {}
 
-    def create_child(self):
-        return Binder(self._injector, self._binding_map.copy())
+    def create_child(self, injector=None):
+        return Binder(injector or self._injector, self._binding_map.copy())
 
     def add_error(self, exc, msg):
         self._errors.append(exc(msg))
