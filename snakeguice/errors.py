@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-"""errors used by snake-guice"""
+"""Errors used by snake-guice"""
 
 
 class SnakeGuiceError(Exception):

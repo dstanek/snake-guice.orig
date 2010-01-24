@@ -1,4 +1,5 @@
 """Providers used in the binding process."""
+
 # pylint: disable-msg=C0111
 #         providers are so small that we can safely omit doc comments
 

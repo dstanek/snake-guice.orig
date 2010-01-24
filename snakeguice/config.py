@@ -15,7 +15,6 @@ class ConfigParserLoader(object):
         self.short_name = os.path.basename(filename)
 
     def bind_configuration(self, binder):
-        from ConfigParser import SafeConfigParser
         parser = SafeConfigParser()
         parser.read(self.filename)
         for section, option, value in _iterate_parser(parser):

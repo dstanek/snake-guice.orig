@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from snakeguice import errors, providers, scopes
 
 
@@ -15,6 +13,9 @@ class Key(object):
     def __eq__(self, other):
         return (self._interface == other._interface and
                 self._annotation == other._annotation)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class Binder(object):

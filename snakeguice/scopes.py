@@ -1,4 +1,5 @@
 """Scopes that can be used in the binding process."""
+
 # pylint: disable-msg=C0111
 
 from snakeguice import providers

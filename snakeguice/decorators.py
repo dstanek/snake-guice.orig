@@ -64,7 +64,7 @@ def _validate_func_args(func, kwargs):
 def enclosing_frame(frame=None, level=2):
     """Get an enclosing frame that skips decorator code"""
     frame = frame or sys._getframe(level)
-    while frame.f_globals.get('__name__')==__name__: frame = frame.f_back
+    while frame.f_globals.get('__name__') == __name__: frame = frame.f_back
     return frame
 
 

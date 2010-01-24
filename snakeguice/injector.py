@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import inspect
 
 from snakeguice.binder import Binder, Key
