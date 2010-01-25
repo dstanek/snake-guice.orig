@@ -33,7 +33,7 @@ def test_inject_methods():
             ('go', {'y': GuiceArg(float)}),
     ]
 
-def __test_inject_provider():
+def test_inject_provider():
     """ Using property injection, and then auto-providing instance to
         a method.
     """

@@ -33,11 +33,10 @@ def test_injector_simple():
     assert isinstance(person, ch.EvilPerson)
 
 
-def __test_annotated_injector():
+def test_annotated_injector():
     class DomainObject(object):
-        @inject(person0=ch.Person, annotation='good')
-        @inject(person1=ch.Person, annotation='evil')
-        @inject(person2=ch.Person)
+        @inject(person0=ch.Person, person1=ch.Person, person2=ch.Person)
+        @annotate(person0='good', person1='evil')
         def __init__(self, person0=Injected, person1=Injected,
                 person2=Injected):
             self.person0 = person0
