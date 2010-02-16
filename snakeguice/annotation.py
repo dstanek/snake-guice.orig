@@ -12,4 +12,4 @@ class Annotation(object):
                 and self._value == other._value)
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        return not self == other

@@ -18,7 +18,8 @@ class ConfigParserLoader(object):
         parser = SafeConfigParser()
         parser.read(self.filename)
         for section, option, value in _iterate_parser(parser):
-            annotation = Config('%s:%s:%s' % (self.short_name, section, option))
+            annotation = Config('%s:%s:%s'
+                                % (self.short_name, section, option))
             self._add_binding_to_binder(binder, Config, value, annotation)
 
     def _add_binding_to_binder(self, binder, interface, value, annotation):
@@ -28,5 +29,5 @@ class ConfigParserLoader(object):
 def _iterate_parser(parser):
     for section in parser.sections():
         for option in parser.options(section):
-	    value = parser.get(section, option)
+            value = parser.get(section, option)
             yield section, option, value

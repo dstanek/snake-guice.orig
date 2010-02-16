@@ -15,7 +15,7 @@ class Key(object):
                 self._annotation == other._annotation)
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        return not self == other
 
 
 class Binder(object):
@@ -41,7 +41,8 @@ class Binder(object):
 
         if 'to' in kwargs:
             #TODO: add some validation
-            binding.provider = providers.SimpleProvider(self._injector, kwargs['to'])
+            binding.provider = providers.SimpleProvider(
+                    self._injector, kwargs['to'])
         elif 'to_provider' in kwargs:
             #TODO: add some validation
             provider = kwargs['to_provider']

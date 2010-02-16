@@ -9,10 +9,10 @@ class ParameterInterceptor(object):
         (param_name, param_type) = kwargs.items()[0]
 
         def callback(method):
-            def _f(*args, **kwargs): # it is OK to override the outer function
+            def _callback(*args, **kwargs):
                 kwargs[param_name] = self._injector.get_instance(
                         param_type, annotation)
                 return method(*args, **kwargs)
-            return _f
+            return _callback
 
         return callback
