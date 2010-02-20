@@ -91,3 +91,7 @@ class Injector(object):
             getattr(instance, name)(**kwargs)
 
         return instance
+
+
+def create_injector(modules):
+    return Injector(modules)
