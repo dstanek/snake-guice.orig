@@ -33,43 +33,6 @@ def test_inject_methods():
             ('go', {'y': GuiceArg(float)}),
     ]
 
-def test_inject_provider():
-    """ Using property injection, and then auto-providing instance to
-        a method.
-    """
-    from snakeguice import injector
-    from snakeguice.providers import InstanceProvider
-
-    # we want a specific instance of Something to be provided to a method
-    # in SomeClass
-    class Something(object):
-        def __init__(self, status):
-            self.status = status
-
-    # SomeClass has an injected provider property, and a method that expects
-    # the provided instance as an attribute to its method
-    class SomeClass(object):
-        some_provider = inject(InstanceProvider)
-
-        @provide(p=some_provider)
-        def get_some_status(self, p):
-            assert type(p) == Something
-            assert p.status == 'something:provided'
-            return p.status
-
-    class Modules:
-        def configure(self, binder):
-            provided = InstanceProvider(Something('something:provided'))
-            binder.bind(InstanceProvider, to_instance=provided)
-
-    inj = injector.Injector(Modules())
-    some_class = inj.get_instance(SomeClass)
-    assert isinstance(some_class, SomeClass)
-
-    status = some_class.get_some_status()
-    assert status == 'something:provided'
-
-
 def test_inject_all():
     """Using combinations of inject including annotations."""
     #TODO: add annotation stuff again
