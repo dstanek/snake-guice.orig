@@ -69,13 +69,13 @@ except ImportError:
 
 
 try:
-    import mote
+    import mote.runner
     @task
     @cmdopts([('quiet', 'q', "Don't print the specification")])
     def specs():
         """Run specs with mote."""
         sys.argv.append('specs')
-        mote.main()
+        mote.runner.main()
 except ImportError:
     """mote is not installed."""
 
