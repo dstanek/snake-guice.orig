@@ -32,6 +32,10 @@ def describe_initializing_GuiceData_from_a_class():
         data0 = GuiceData.from_class(object)
         data1 = GuiceData.from_class(object)
 
+        def should_have_gotten_GuiceData_instances():
+            assert isinstance(data0, GuiceData)
+            assert isinstance(data1, GuiceData)
+
         def should_return_new_instance_each_time():
             assert data0 is not data1
 
@@ -39,8 +43,20 @@ def describe_initializing_GuiceData_from_a_class():
             assert not hasattr(object, '__guice__')
 
 
-def test_creating_GuiceData_from_a_class():
-    pass
+def describe_initializing_GuiceData_from_a_dict():
+    d = dict()
+    data = GuiceData.from_class_dict(d)
+
+    def should_have_a_GuiceData_instance_in_dict():
+        assert isinstance(d['__guice__'], GuiceData)
+
+
+def describe_getting_GuiceData_from_a_dict():
+    d = dict(__guice__=object())
+    data = GuiceData.from_class_dict(d)
+
+    def should_get_the_same_instance():
+        assert d['__guice__'] is data
 
 
 def describe_compositing_GuiceData_instances():
@@ -49,7 +65,7 @@ def describe_compositing_GuiceData_instances():
     g_data = GuiceData.from_class(GrandDaddy)
     g_data.init = object()
     g_data.methods = {'g_method': object(),'method': object()}
-    
+
     class Daddy(GrandDaddy): pass
     d_data = GuiceData.from_class(Daddy)
     d_data.init = object()
