@@ -23,10 +23,11 @@ class GuiceData(object):
         composite_data = GuiceData()
         for _cls in target_class.__mro__[-1::-1]:
             data = GuiceData.from_class(_cls)
+            if data.init: # only the last class in the chain
+                composite_data.init = data.init
             for name, method in data.methods.items():
                 composite_data.methods[name] = method
 
-        composite_data.init = data.init # only the last class in the chain
         return composite_data
 
     @classmethod

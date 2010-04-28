@@ -17,6 +17,22 @@ class Module(object):
         binder.bind(Data, annotated_with='new', to=NewData)
 
 
+def describe_a_child_inheriting_an_injected_init():
+    class Parent(object):
+        @inject(value=OldData)
+        def __init__(self, value):
+            self.value = value
+
+    class Child(Parent):
+        pass
+
+    instance = Injector(Module()).get_instance(Child)
+
+    def child_should_have_value_set():
+        print instance.value, type(instance.value)
+        assert isinstance(instance.value, OldData)
+
+
 def describe_a_child_inheriting_an_injected_method():
     class Parent(object):
         @inject(value=Data)
