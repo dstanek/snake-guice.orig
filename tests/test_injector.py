@@ -6,7 +6,7 @@ injector module unit tests
 
 from dingus import Dingus
 
-from snakeguice import injector, Injected
+from snakeguice import create_injector, injector, Injected
 from snakeguice import binder
 import cls_heirarchy as ch
 
@@ -63,3 +63,19 @@ def test_create_child():
     assert isinstance(person, ch.EvilPerson)
     person = child_inj.get_instance(ch.Person, 'good')
     assert isinstance(person, ch.GoodPerson)
+
+
+class test_using_create_injector_factor(object):
+
+    def setup(self):
+        class PeopleModule(object):
+            def configure(self, binder):
+                binder.bind(ch.Person, to=ch.EvilPerson)
+        self.injector = create_injector([PeopleModule()])
+        self.instance = self.injector.get_instance(ch.Person)
+
+    def test_an_injector_was_returned(self):
+        assert isinstance(self.injector, injector.Injector)
+
+    def test_correct_instance_was_created(self):
+        assert isinstance(self.instance, ch.EvilPerson)

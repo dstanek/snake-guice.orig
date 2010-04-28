@@ -1,9 +1,10 @@
+import os
 import sys
-from paver.path import path
-from paver.easy import task, needs, cmdopts, options
+from paver.easy import *
+import paver
 from paver.setuputils import setup
 
-sys.path.insert(0, path(__file__).dirname())
+sys.path.insert(0, os.path.dirname(__file__))
 
 from snakeguice import __pkginfo__ as pkg
 
@@ -40,13 +41,14 @@ try:
     @cmdopts([('msg-only', 'm', 'Only generate messages (no reports)')])
     def lint():
         """Check the module you're building with pylint."""
-        build_dir = path(__file__).dirname()
+        build_dir = paver.runtime.path.getcwd()
         args = ['--rcfile', build_dir / "pylint.cfg"]
         if options.get('lint', {}).get('msg_only', 0):
             args.append('-rn')
 
         pkgs = list(set(p.split(".")[0] for p in options.setup.packages))
-        linter.Run(args + pkgs)
+        args += pkgs
+        linter.Run(args)
 except ImportError:
     """Pylint is not installed."""
 

@@ -10,7 +10,7 @@ Examples of using the snakeguice API.
 from snakeguice import inject, Injected, ParameterInterceptor, annotate
 from snakeguice import Injector, provides
 
-import cls_heirarchy as ch
+from .. import cls_heirarchy as ch
 
 
 class given_an_injector(object):

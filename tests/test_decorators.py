@@ -3,6 +3,7 @@
 from nose.tools import raises
 
 from snakeguice.decorators import inject, GuiceArg, annotate
+from snakeguice.decorators import provide, Provided
 
 
 def test_inject_init():
@@ -31,7 +32,6 @@ def test_inject_methods():
     assert SomeClass.__guice__.methods.items() == [
             ('go', {'y': GuiceArg(float)}),
     ]
-
 
 def test_inject_all():
     """Using combinations of inject including annotations."""
