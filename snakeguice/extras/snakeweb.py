@@ -17,10 +17,10 @@ class RoutesBinder(object):
         controller = kwargs.get('controller')
 
         if controller is None:
-            raise TypeError('no controller specified')
+            raise TypeError('No controller specified')
 
         if not isinstance(controller, type):
-            raise TypeError('controller must be a class')
+            raise TypeError('Controller must be a class')
 
         key = unicode(str(controller))
         self.controller_map[key] = controller
@@ -66,7 +66,7 @@ class Application(object):
 
         route = binder.match(environ['PATH_INFO'], environ)
         if not route:
-            return HTTPNotFound('no motching route')(environ, start_response)
+            return HTTPNotFound('No matching route')(environ, start_response)
 
         controller = route.pop('controller')
         controller = binder.controller_map.get(controller)
@@ -74,14 +74,15 @@ class Application(object):
             return HTTPNotFound()(environ, start_response)
 
         controller = self._injector.get_instance(controller)
-        try:
-            action = route.pop('action')
-        except KeyError:
-            action = 'index'
 
-        if not hasattr(controller, action):
+        action = route.pop('action', 'index')
+        action = getattr(controller, action, None)
+
+        if not action and callable(controller):
+            action = controller
+
+        if not action:
             return HTTPNotFound()(environ, start_response)
 
-        action = getattr(controller, action)
         response = action(request, **route)
         return response(environ, start_response)
