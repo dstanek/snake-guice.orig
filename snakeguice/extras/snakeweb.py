@@ -13,7 +13,6 @@ class RoutesBinder(object):
         self.controller_map = {}
 
     def connect(self, *args, **kwargs):
-
         controller = kwargs.get('controller')
 
         if controller is None:
@@ -46,12 +45,23 @@ class RoutesModule(object):
         binder.bind(RoutesBinder,
                          to_instance=self.routes_binder,
                          annotated_with=self.annotation)
+
         self.configure_mapper(self.routes_binder)
         self._mapper.create_regs([])
 
     def configure_mapper(self, mapper):
-        raise NotImplementedError(
-                'you must provide a configure_mapper implementation')
+        raise NotImplementedError
+
+
+class AutoRoutesModule(RoutesModule):
+
+    def configure_mapper(self, mapper):
+        for route, controller in self.configured_routes.items():
+            if hasattr(controller, 'im_class'):
+                self.routes_binder.connect(route, controller=controller.im_class,
+                                action=controller.__name__)
+            else:
+                self.routes_binder.connect(route, controller=controller)
 
 
 class Application(object):

@@ -72,3 +72,36 @@ class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
 
     def test_controller_should_be_added_to_the_map(self):
         assert self.binder.controller_map == {self.key: self.controller}
+
+
+class TestWhenAutoConfiguringRoutes(DingusTestCase(snakeweb.AutoRoutesModule)):
+
+    def setup(self):
+        super(TestWhenAutoConfiguringRoutes, self).setup()
+
+        class MyController(object):
+            def __call__(self):
+                pass
+
+            def bar(self, request):
+                pass
+
+        self.controller = MyController
+
+        class MyModule(snakeweb.AutoRoutesModule):
+            configured_routes = {
+                '/': MyController,
+                '/foo': MyController.bar,
+                }
+
+        self.module = MyModule()
+        self.module.configure(binder=Dingus())
+
+    def test_should_map_callables(self):
+        assert self.module.routes_binder.calls('connect', '/',
+                                                controller=self.controller)
+
+    def test_should_map_methods(self):
+        assert self.module.routes_binder.calls('connect', '/foo',
+                                                controller=self.controller,
+                                                action='bar')
