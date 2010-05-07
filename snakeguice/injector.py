@@ -38,11 +38,11 @@ class Injector(object):
     def __init__(self, modules, binder=None, stage=None):
         if not hasattr(modules, '__iter__'):
             modules = [modules]
+        if binder:
+            self._binder = binder.create_child(self)
+        else:
+            self._binder = Binder(self)
 
-        if not binder:
-            binder = Binder(self)
-
-        self._binder = binder
         self._stage = stage
 
         provides_helper = ProvidesBinderHelper(self)
