@@ -3,7 +3,6 @@
 from nose.tools import raises
 
 from snakeguice.decorators import inject, GuiceArg, annotate
-from snakeguice.decorators import provide, Provided
 
 
 def test_inject_init():
