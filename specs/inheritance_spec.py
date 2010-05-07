@@ -29,7 +29,6 @@ def describe_a_child_inheriting_an_injected_init():
     instance = Injector(Module()).get_instance(Child)
 
     def child_should_have_value_set():
-        print instance.value, type(instance.value)
         assert isinstance(instance.value, OldData)
 
 
