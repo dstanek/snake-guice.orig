@@ -79,3 +79,7 @@ class test_using_create_injector_factor(object):
 
     def test_correct_instance_was_created(self):
         assert isinstance(self.instance, ch.EvilPerson)
+
+
+def test_create_an_injector_without_any_modules():
+    modules = [FakeModule(), FakeModule(), FakeModule()]

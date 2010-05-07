@@ -2,6 +2,7 @@ import inspect
 
 from snakeguice.binder import Binder, Key
 from snakeguice.decorators import GuiceData as _GuiceData
+from snakeguice.modules import ModuleAdapter
 
 
 class ProvidesBinderHelper(object):
@@ -35,9 +36,12 @@ class ProvidesBinderHelper(object):
 
 class Injector(object):
 
-    def __init__(self, modules, binder=None, stage=None):
-        if not hasattr(modules, '__iter__'):
+    def __init__(self, modules=None, binder=None, stage=None):
+        if modules is None:
+            modules = []
+        elif not hasattr(modules, '__iter__'):
             modules = [modules]
+
         if binder:
             self._binder = binder.create_child(self)
         else:
@@ -45,9 +49,12 @@ class Injector(object):
 
         self._stage = stage
 
+        self.add_modules(modules)
+
+    def add_modules(self, modules):
         provides_helper = ProvidesBinderHelper(self)
         for module in modules:
-            module.configure(self._binder)
+            ModuleAdapter(module).configure(self._binder)
             provides_helper.bind_providers(module, self._binder)
 
     def get_binding(self, key):
