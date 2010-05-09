@@ -3,6 +3,7 @@
 from webob import Request, Response
 from webob.exc import HTTPNotFound
 import routes
+from snakeguice.modules import Module
 
 
 class RoutesBinder(object):
@@ -40,18 +41,17 @@ class RoutesModule(object):
 
     annotation = None
 
-    def configure(self, binder):
+    def run_configure(self, binder):
         self._mapper = routes.Mapper()
         self.routes_binder = RoutesBinder(self._mapper, self.annotation)
         binder.bind(RoutesBinder,
-                         to_instance=self.routes_binder,
-                         annotated_with=self.annotation)
-        self.configure_mapper(self.routes_binder)
+                    to_instance=self.routes_binder,
+                    annotated_with=self.annotation)
+        self.configure(self.routes_binder)
         self._mapper.create_regs([])
 
-    def configure_mapper(self, mapper):
-        raise NotImplementedError(
-                'you must provide a configure_mapper implementation')
+    def configure(self, routes_binder):
+        raise NotImplementedError
 
 
 class Application(object):

@@ -10,14 +10,14 @@ class TestRoutesModuleSetup(DingusTestCase(snakeweb.RoutesModule)):
         super(TestRoutesModuleSetup, self).setup()
 
         class MyRoutesModule(snakeweb.RoutesModule):
-            configure_mapper = Dingus()
+            configure = Dingus()
 
         self.binder = Dingus()
         self.module = MyRoutesModule()
-        self.module.configure(binder=self.binder)
+        self.module.run_configure(binder=self.binder)
 
-    def test_configure_mapper_is_called_with_a_mapper(self):
-        assert self.module.configure_mapper.calls('()',
+    def test_configure_is_called_with_a_mapper(self):
+        assert self.module.configure.calls('()',
                 snakeweb.RoutesBinder.return_value)
 
     def test_real_routes_mapper_was_created(self):
