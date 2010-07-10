@@ -83,6 +83,6 @@ except ImportError:
 
 
 @task
-@needs(['tests', 'specs'])
+@needs(['specs', 'tests'])
 def all_tests():
     """Run unit tests and specs."""
