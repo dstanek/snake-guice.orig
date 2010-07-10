@@ -34,12 +34,12 @@ class Binder(object):
 
     def bind(self, _class, **kwargs):
 
+        key = Key(interface=_class, annotation=kwargs.get('annotated_with'))
+
         binding = Binding()
-        binding.interface = _class
-        binding.annotation = kwargs.get('annotated_with')
+        binding.key = key
         binding.scope = kwargs.get('in_scope', scopes.NO_SCOPE)
 
-        key = Key(binding.interface, binding.annotation)
 
         if key in self._binding_map:
             raise errors.BindingError('baseclass %r already bound' % _class)
@@ -67,7 +67,6 @@ class Binder(object):
 class Binding(object):
 
     def __init__(self):
-        self.interface = None
-        self.annotation = None
+        self.key = None
         self.provider = None
         self.scope = None
