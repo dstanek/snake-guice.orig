@@ -33,11 +33,16 @@ class Binder(object):
         #TODO: do something with this
 
     def bind(self, _class, **kwargs):
-        if _class in self._binding_map:
-            raise errors.BindingError('baseclass %r already bound' % _class)
 
         binding = Binding()
         binding.interface = _class
+        binding.annotation = kwargs.get('annotated_with')
+        binding.scope = kwargs.get('in_scope', scopes.NO_SCOPE)
+
+        key = Key(binding.interface, binding.annotation)
+
+        if key in self._binding_map:
+            raise errors.BindingError('baseclass %r already bound' % _class)
 
         if 'to' in kwargs:
             #TODO: add some validation
@@ -53,10 +58,6 @@ class Binder(object):
             provider = kwargs['to_instance']
             binding.provider = providers.InstanceProvider(provider)
 
-        binding.annotation = kwargs.get('annotated_with', None)
-        binding.scope = kwargs.get('in_scope', scopes.NO_SCOPE)
-
-        key = Key(binding.interface, binding.annotation)
         self._binding_map[key] = binding
 
     def get_binding(self, key):
