@@ -1,15 +1,12 @@
 import inspect
 
 from snakeguice.binder import Binder, Key
-from snakeguice.decorators import GuiceData as _GuiceData
+from snakeguice.decorators import GuiceData as _GuiceData, inject
 from snakeguice.modules import ModuleAdapter
 from snakeguice.interfaces import Injector as IInjector
 
 
 class ProvidesBinderHelper(object):
-
-    def __init__(self, injector):
-        self._injector = injector
 
     def bind_providers(self, module, binder):
         members = [m for m in inspect.getmembers(module)
@@ -21,17 +18,23 @@ class ProvidesBinderHelper(object):
                 binder.bind(type, to_provider=provider)
 
     def _build_provider(self, module, type, method):
-        helper_self = self
+
         class GenericProvider(object):
+
+            @inject(injector=IInjector)
+            def __init__(self, injector):
+                self._injector = injector
+
             def get(self):
                 kwargs = {}
                 method_name = method.__name__
                 guice_data = _GuiceData.from_class(module.__class__)
                 injectable_args = guice_data.methods.get(method_name, {})
                 for name, guicearg in injectable_args.items():
-                    kwargs[name] = helper_self._injector.get_instance(
+                    kwargs[name] = self._injector.get_instance(
                             guicearg.datatype, guicearg.annotation)
                 return method(**kwargs)
+
         return GenericProvider
 
 
@@ -53,7 +56,7 @@ class Injector(object):
         self.add_modules(modules)
 
     def add_modules(self, modules):
-        provides_helper = ProvidesBinderHelper(self)
+        provides_helper = ProvidesBinderHelper()
         for module in modules:
             ModuleAdapter(module).configure(self._binder)
             provides_helper.bind_providers(module, self._binder)
