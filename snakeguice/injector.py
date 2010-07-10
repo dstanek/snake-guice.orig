@@ -3,6 +3,7 @@ import inspect
 from snakeguice.binder import Binder, Key
 from snakeguice.decorators import GuiceData as _GuiceData
 from snakeguice.modules import ModuleAdapter
+from snakeguice.interfaces import Injector as IInjector
 
 
 class ProvidesBinderHelper(object):
@@ -61,6 +62,9 @@ class Injector(object):
         return self._binder.get_binding(key)
 
     def get_instance(self, cls, annotation=None):
+        if cls is IInjector: # TODO: i don't like this, but it works for now
+            return self
+
         key = Key(cls, annotation)
         binding = self.get_binding(key)
         if binding:
