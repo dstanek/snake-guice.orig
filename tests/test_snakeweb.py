@@ -50,10 +50,6 @@ class TestRoutesBinderConnectWithInvalidControllers(BaseTestRoutesBinder):
     def test_an_exception_is_raised_is_no_controller_is_specified(self):
         self.binder.connect('/post/3/view')
 
-    @raises(TypeError)
-    def test_an_exception_is_raised_when_a_non_type_controller_is_passed_in(self):
-        self.binder.connect('/post/3/view', controller=object())
-
 
 class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
 
@@ -64,7 +60,7 @@ class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
         self.kwargs = dict(a=Dingus(), controller=object)
         self.binder.connect(*self.args, **self.kwargs)
 
-        self.key = unicode(str(self.controller))
+        self.key = unicode((id(self.controller), repr(self.controller)))
         self.kwargs['controller'] = self.key
 
     def test_pass_through_to_real_mapper(self):
