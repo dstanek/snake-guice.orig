@@ -7,3 +7,7 @@ class SnakeGuiceError(Exception):
 
 class BindingError(SnakeGuiceError):
     """Raised when an issue in the binding rules is found."""
+
+
+class AssistError(SnakeGuiceError):
+    """Raised when an issue with assisted injection is found."""
