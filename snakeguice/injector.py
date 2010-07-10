@@ -101,4 +101,5 @@ class Injector(object):
 
 
 def create_injector(modules):
+    """Factory for creating Injector instances."""
     return Injector(modules)

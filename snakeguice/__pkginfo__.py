@@ -8,7 +8,7 @@ packages = ['snakeguice']
 version = '0.2.1dev'
 
 license = 'MIT'
-copyright = 'Copyright (c) 2008 David Stanek (dstanek@dstanek.com)'
+copyright = 'Copyright (c) 2008-2010 David Stanek (dstanek@dstanek.com)'
 
 short_desc = 'A simple, lightweight Python dependency injection framework'
 long_desc = """\

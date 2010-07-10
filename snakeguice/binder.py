@@ -33,13 +33,11 @@ class Binder(object):
         #TODO: do something with this
 
     def bind(self, _class, **kwargs):
-
         key = Key(interface=_class, annotation=kwargs.get('annotated_with'))
 
         binding = Binding()
         binding.key = key
         binding.scope = kwargs.get('in_scope', scopes.NO_SCOPE)
-
 
         if key in self._binding_map:
             raise errors.BindingError('baseclass %r already bound' % _class)
