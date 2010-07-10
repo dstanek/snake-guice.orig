@@ -64,6 +64,16 @@ class Injector(object):
     def get_binding(self, key):
         return self._binder.get_binding(key)
 
+    def get_provider(self, cls, annotation=None):
+        injector = self
+
+        class DynamicProvider(object):
+
+            def get(self):
+                return injector.get_instance(cls, annotation)
+
+        return DynamicProvider()
+
     def get_instance(self, cls, annotation=None):
         if cls is IInjector: # TODO: i don't like this, but it works for now
             return self

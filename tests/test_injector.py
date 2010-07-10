@@ -83,3 +83,17 @@ class test_using_create_injector_factor(object):
 
 def test_create_an_injector_without_any_modules():
     modules = [FakeModule(), FakeModule(), FakeModule()]
+
+
+class test_using_get_provider(object):
+
+    def setup(self):
+        class PeopleModule(object):
+            def configure(self, binder):
+                binder.bind(ch.Person, to=ch.EvilPerson)
+        self.injector = create_injector([PeopleModule()])
+        self.provider = self.injector.get_provider(ch.Person)
+        self.instance = self.provider.get()
+
+    def test_provider_provides_an_instance(self):
+        assert isinstance(self.instance, ch.EvilPerson)
