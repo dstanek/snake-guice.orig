@@ -50,10 +50,6 @@ class TestRoutesBinderConnectWithInvalidControllers(BaseTestRoutesBinder):
     def test_an_exception_is_raised_is_no_controller_is_specified(self):
         self.binder.connect('/post/3/view')
 
-    @raises(TypeError)
-    def test_an_exception_is_raised_when_a_non_type_controller_is_passed_in(self):
-        self.binder.connect('/post/3/view', controller=object())
-
 
 class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
 
@@ -64,7 +60,7 @@ class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
         self.kwargs = dict(a=Dingus(), controller=object)
         self.binder.connect(*self.args, **self.kwargs)
 
-        self.key = unicode(str(self.controller))
+        self.key = unicode((id(self.controller), repr(self.controller)))
         self.kwargs['controller'] = self.key
 
     def test_pass_through_to_real_mapper(self):
@@ -72,3 +68,36 @@ class TestWhenCallingRoutesBinder(BaseTestRoutesBinder):
 
     def test_controller_should_be_added_to_the_map(self):
         assert self.binder.controller_map == {self.key: self.controller}
+
+
+class TestWhenAutoConfiguringRoutes(DingusTestCase(snakeweb.AutoRoutesModule)):
+
+    def setup(self):
+        super(TestWhenAutoConfiguringRoutes, self).setup()
+
+        class MyController(object):
+            def __call__(self):
+                pass
+
+            def bar(self, request):
+                pass
+
+        self.controller = MyController
+
+        class MyModule(snakeweb.AutoRoutesModule):
+            configured_routes = {
+                '/': MyController,
+                '/foo': MyController.bar,
+                }
+
+        self.module = MyModule()
+        self.module.run_configure(binder=Dingus())
+
+    def test_should_map_callables(self):
+        assert self.module.routes_binder.calls('connect', '/',
+                                                controller=self.controller)
+
+    def test_should_map_methods(self):
+        assert self.module.routes_binder.calls('connect', '/foo',
+                                                controller=self.controller,
+                                                action='bar')

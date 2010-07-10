@@ -14,7 +14,7 @@ class MainModule(object):
 
 class URLMapperModule(RoutesModule):
 
-    def configure_mapper(self, mapper):
-        mapper.connect('/form', controller=HomeController, action='form',
-                      conditions=dict(method='POST'))
-        mapper.connect('/', controller=HomeController, action='index')
+    def configure(self, routes_binder):
+        routes_binder.connect('/form', controller=HomeController,
+                action='form', conditions=dict(method='POST'))
+        routes_binder.connect('/', controller=HomeController, action='index')
