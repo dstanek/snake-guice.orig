@@ -29,7 +29,7 @@ class _Singleton(object):
         if not cached_provider:
             instance = provider.get()
             cached_provider = self._cached_provider_map[key] = \
-                    providers.InstanceProvider(instance)
+                    providers.create_instance_provider(instance)
         return cached_provider
 
 

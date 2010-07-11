@@ -20,13 +20,12 @@ class Key(object):
 
 class Binder(object):
 
-    def __init__(self, injector, binding_map=None):
-        self._injector = injector
+    def __init__(self, binding_map=None):
         self._errors = []
         self._binding_map = binding_map or {}
 
-    def create_child(self, injector=None):
-        return Binder(injector or self._injector, self._binding_map.copy())
+    def create_child(self):
+        return Binder(self._binding_map.copy())
 
     def add_error(self, exc, msg):
         self._errors.append(exc(msg))
@@ -44,17 +43,15 @@ class Binder(object):
 
         if 'to' in kwargs:
             #TODO: add some validation
-            binding.provider = providers.SimpleProvider(
-                    self._injector, kwargs['to'])
+            binding.provider = providers.create_simple_provider(kwargs['to'])
         elif 'to_provider' in kwargs:
             #TODO: add some validation
             provider = kwargs['to_provider']
-            binding.provider = providers.ProviderProvider(
-                    self._injector, provider)
+            binding.provider = provider
         elif 'to_instance' in kwargs:
             #TODO: add some validation
             provider = kwargs['to_instance']
-            binding.provider = providers.InstanceProvider(provider)
+            binding.provider = providers.create_instance_provider(provider)
 
         self._binding_map[key] = binding
 

@@ -3,31 +3,27 @@
 # pylint: disable-msg=C0111
 #         providers are so small that we can safely omit doc comments
 
-
-class SimpleProvider(object):
-
-    def __init__(self, injector, cls):
-        self._injector = injector
-        self._class = cls
-
-    def get(self):
-        return self._injector.create_object(self._class)
+from snakeguice.decorators import inject
+from snakeguice.interfaces import Injector
 
 
-class InstanceProvider(object):
+def create_simple_provider(cls):
+    class DynamicSimpleProvider(object):
 
-    def __init__(self, obj):
-        self._obj = obj
+        @inject(injector=Injector)
+        def __init__(self, injector):
+            self._injector = injector
 
-    def get(self):
-        return self._obj
+        def get(self):
+            return self._injector.create_object(cls)
+
+    return DynamicSimpleProvider
 
 
-class ProviderProvider(object):
+def create_instance_provider(obj):
+    class DynamicInstanceProvider(object):
 
-    def __init__(self, injector, provider):
-        self._injector = injector
-        self._provider = provider
+        def get(self):
+            return obj
 
-    def get(self):
-        return self._injector.get_instance(self._provider).get()
+    return DynamicInstanceProvider

@@ -47,9 +47,9 @@ class Injector(object):
             modules = [modules]
 
         if binder:
-            self._binder = binder.create_child(self)
+            self._binder = binder.create_child()
         else:
-            self._binder = Binder(self)
+            self._binder = Binder()
 
         self._stage = stage
 
@@ -82,7 +82,8 @@ class Injector(object):
         binding = self.get_binding(key)
         if binding:
             provider = binding.scope.scope(key, binding.provider)
-            return provider.get()
+            provider_inst = self.get_instance(provider)
+            return provider_inst.get()
         else:
             return self.create_object(cls)
 
