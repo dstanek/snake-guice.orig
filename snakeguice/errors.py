@@ -11,3 +11,7 @@ class BindingError(SnakeGuiceError):
 
 class AssistError(SnakeGuiceError):
     """Raised when an issue with assisted injection is found."""
+
+
+class MultiBindingError(SnakeGuiceError):
+    """Raised when a issue with multi-binding is found."""
