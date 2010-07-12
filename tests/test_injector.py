@@ -65,7 +65,7 @@ def test_create_child():
     assert isinstance(person, ch.GoodPerson)
 
 
-class test_using_create_injector_factor(object):
+class test_using_create_injector_factory(object):
 
     def setup(self):
         class PeopleModule(object):
