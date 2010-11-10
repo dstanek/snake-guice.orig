@@ -61,9 +61,6 @@ class Injector(object):
             ModuleAdapter(module, self).configure(self._binder)
             provides_helper.bind_providers(module, self._binder)
 
-    def get_binding(self, key):
-        return self._binder.get_binding(key)
-
     def get_provider(self, cls, annotation=None):
         injector = self
 
@@ -79,7 +76,7 @@ class Injector(object):
             return self
 
         key = Key(cls, annotation)
-        binding = self.get_binding(key)
+        binding = self._binder.get_binding(key)
         if binding:
             provider = binding.scope.scope(key, binding.provider)
             if isinstance(provider, type):
