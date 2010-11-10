@@ -1,20 +1,9 @@
 from snakeguice import providers
+from snakeguice.annotation import Annotation
 from snakeguice.binder import Key
 from snakeguice.decorators import inject
 from snakeguice.interfaces import Injector
 from snakeguice.errors import MultiBindingError
-
-
-class _Hashable(object):
-
-    def __init__(self, interface):
-        self._interface = interface
-
-    def __hash__(self):
-        return id(self._interface)
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
 
 
 class _MultiBinder(object):
@@ -48,7 +37,7 @@ class _MultiBinder(object):
                     % self.__class__.__name__)
 
 
-class List(_Hashable):
+class List(Annotation):
     """Used for binding lists."""
 
 
@@ -79,7 +68,7 @@ class ListBinder(_MultiBinder):
         return DynamicMultiBindingProvider
 
 
-class Dict(_Hashable):
+class Dict(Annotation):
     """Used for binding lists."""
 
 
