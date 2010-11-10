@@ -1,8 +1,8 @@
 from os import path
-from snakeguice import inject, annotate
 from mako.template import Template
 from webob import Response
 import formencode
+from snakeguice import inject, annotate
 
 from forms import MyForm
 
