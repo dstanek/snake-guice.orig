@@ -58,7 +58,7 @@ class Injector(object):
     def add_modules(self, modules):
         provides_helper = ProvidesBinderHelper()
         for module in modules:
-            ModuleAdapter(module).configure(self._binder)
+            ModuleAdapter(module, self).configure(self._binder)
             provides_helper.bind_providers(module, self._binder)
 
     def get_binding(self, key):

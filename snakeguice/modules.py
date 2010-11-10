@@ -2,7 +2,9 @@
 class ModuleAdapter(object):
     """Adapts the simple and standard module interfaces to a common one."""
 
-    def __init__(self, module):
+    def __init__(self, module, injector):
+        if hasattr(module, 'set_injector'):
+            module.set_injector(injector)
         self._module = module
 
     def configure(self, binder):
@@ -15,9 +17,12 @@ class ModuleAdapter(object):
 class Module(object):
     """Base class for all standard modules."""
 
+    def __init__(self):
+        self._injector = None
+
     def install(self, binder, module):
         """Add another module's bindings to a binder."""
-        ModuleAdapter(module).configure(binder)
+        ModuleAdapter(module, self._injector).configure(binder)
 
     def run_configure(self, binder):
         """A hook for intercepting the configure method. Allows different
@@ -29,6 +34,9 @@ class Module(object):
         """A subclass should override this to configure a binder."""
         raise NotImplementedError
 
+    def set_injector(self, injector):
+        self._injector = injector
+
 
 class _PrivateModuleWrapper(Module):
     """Exists solely to remove the infinite recursion in Private Modules
@@ -37,6 +45,7 @@ class _PrivateModuleWrapper(Module):
 
     def __init__(self, module):
         self._module = module
+        super(_PrivateModuleWrapper, self).__init__()
 
     def configure(self, binder):
         self._module.configure(binder)
@@ -58,5 +67,5 @@ class PrivateModule(Module):
 
     def run_configure(self, binder):
         self.original_binder = binder
-        private_wrapper = _PrivateModuleWrapper(self)
-        self.private_injector = binder._injector.create_child(private_wrapper)
+        private_module = _PrivateModuleWrapper(self)
+        self.private_injector = self._injector.create_child(private_module)

@@ -4,7 +4,7 @@ from snakeguice.errors import BindingError
 
 def describe_a_Binder():
 
-    binder = Binder(injector=None)
+    binder = Binder()
     binder.bind(object, to_instance=object())
 
     def describe_when_adding_a_duplicate_binding():
