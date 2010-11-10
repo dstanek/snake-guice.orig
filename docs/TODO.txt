@@ -1,10 +1,7 @@
-* add support for a 'optional' keyword arg in the inject decorator
 * figure out what the rules should be for inheritance
 * inject into things that Guice didn't construct
   - specifically third party libraries
 * figure out if there is a need to have the injector understand stages
-* make sure that there are tests for duplicated bindings
-  - this should blow up with an error
 * add line numbers to the exception messages to show where the module failed
 * should we go the extra mile with annotations like Google Guice?
 * do we need an implemented_by or provided_by decorators?
@@ -12,13 +9,14 @@
 * singleton loading should be based on the stage
 * is it possible to order the loading of the singletons?
 * constant binding
-* circular dependency checking
 * What is the Override annotation?
-* Process all dependencies possible before reporting an error
 * Add a Singleton class decorator
 * Add an ImplementedBy class decorator
 * Allow module overriding like: Modules.override(Module).with(Module...)
-* binding to_instance should still to method & property injection
+
+* Better error handling
+  - circular dependency checking
+  - process all dependencies possible before reporting an error
 
 * Better scope implementation
   - use separate Scoped decorators bound to a Scope in a module
