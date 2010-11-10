@@ -18,14 +18,18 @@ class Key(object):
         return not self == other
 
 
+class _EmptyBinder(object):
+
+    def get_binding(self, key):
+        return None
+
+
 class Binder(object):
 
-    def __init__(self, binding_map=None):
+    def __init__(self, parent=None):
+        self._parent = parent or _EmptyBinder()
         self._errors = []
-        self._binding_map = binding_map or {}
-
-    def create_child(self):
-        return Binder(self._binding_map.copy())
+        self._binding_map = {}
 
     def add_error(self, exc, msg):
         self._errors.append(exc(msg))
@@ -56,7 +60,10 @@ class Binder(object):
         self._binding_map[key] = binding
 
     def get_binding(self, key):
-        return self._binding_map.get(key)
+        return self._binding_map.get(key) or self._parent.get_binding(key)
+
+    def create_child(self):
+        return Binder(self)
 
 
 class Binding(object):
