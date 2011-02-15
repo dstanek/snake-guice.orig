@@ -81,7 +81,7 @@ class Application(object):
 
         route = binder.match(environ['PATH_INFO'], environ)
         if not route:
-            return HTTPNotFound('no motching route')(environ, start_response)
+            return HTTPNotFound('no matching route')(environ, start_response)
 
         controller = route.pop('controller')
         controller = binder.controller_map.get(controller)
