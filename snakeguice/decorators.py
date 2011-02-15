@@ -81,11 +81,10 @@ def inject(**kwargs):
         gmethod = dict((k, GuiceArg(v, annotations.get(k)))
                        for k, v in kwargs.items())
 
+        _validate_func_args(func, kwargs)
         if func.__name__ == '__init__':
-            _validate_func_args(func, kwargs)
             guice_data.init = gmethod
         else:
-            _validate_func_args(func, kwargs)
             guice_data.methods[func.__name__] = gmethod
 
         return func
