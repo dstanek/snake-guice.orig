@@ -28,7 +28,7 @@ class OrderService(object):
 class Worker(object):
     """Uses services to do real work."""
 
-    @assisted_inject(c_service=CustomerService, o_service=OrderService)
+    @assisted_inject(c_service=IService, o_service=IService)
     @annotate(c_service="customer", o_service="order")
     def __init__(self, c_service, o_service, name, date):
         self.c_service = c_service
