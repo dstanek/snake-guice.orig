@@ -20,10 +20,7 @@ class ConfigParserLoader(object):
         for section, option, value in _iterate_parser(parser):
             annotation = Config('%s:%s:%s'
                                 % (self.short_name, section, option))
-            self._add_binding_to_binder(binder, Config, value, annotation)
-
-    def _add_binding_to_binder(self, binder, interface, value, annotation):
-        binder.bind(interface, to_instance=value, annotated_with=annotation)
+            binder.bind(annotation, to_instance=value)
 
 
 def _iterate_parser(parser):
