@@ -7,8 +7,8 @@ from snakeguice import providers
 
 class _NoScope(object):
     """A default scrope returns the same provider that gets passed in.
-    
-    This is internally used and will probably never be directly used in 
+
+    This is internally used and will probably never be directly used in
     a module.
     """
 
