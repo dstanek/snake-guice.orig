@@ -7,7 +7,7 @@ Examples of using the snakeguice API.
 #TODO: add a test proving call throughs work
 
 
-from snakeguice import inject, Injected, ParameterInterceptor, annotate
+from snakeguice import inject, ParameterInterceptor, annotate
 from snakeguice import Injector, provides
 
 from .. import cls_heirarchy as ch
@@ -37,8 +37,7 @@ def test_annotated_injector():
     class DomainObject(object):
         @inject(person0=ch.Person, person1=ch.Person, person2=ch.Person)
         @annotate(person0='good', person1='evil')
-        def __init__(self, person0=Injected, person1=Injected,
-                person2=Injected):
+        def __init__(self, person0, person1, person2):
             self.person0 = person0
             self.person1 = person1
             self.person2 = person2
@@ -60,7 +59,7 @@ def test_annotations():
     class DomainObject(object):
         @inject(hero=ch.Person, villian=ch.Person, victim=ch.Person)
         @annotate(hero='good', villian='evil')
-        def __init__(self, hero=Injected, villian=Injected, victim=Injected):
+        def __init__(self, hero, villian, victim):
             self.hero = hero
             self.villian = villian
             self.victim = victim
@@ -142,15 +141,15 @@ def test_inject_decorator():
     class DomainObject(object):
 
         @inject(logger=ch.Logger)
-        def __init__(self, logger=Injected):
+        def __init__(self, logger):
             assert isinstance(logger, ch.ConcreteLogger)
 
         @inject(person=ch.Person)
-        def do_something(self, person=Injected):
+        def do_something(self, person):
             assert isinstance(person, ch.EvilPerson)
 
         @inject(person=ch.Person, logger=ch.Logger)
-        def multipl(self, logger=Injected, person=Injected):
+        def multipl(self, logger, person):
             assert isinstance(person, ch.EvilPerson)
             assert isinstance(logger, ch.ConcreteLogger)
 
@@ -179,7 +178,7 @@ class TestMethodInterceptors(object):
     def test_noargs(self):
         class DomainObject(object):
             @self.interceptor(person=ch.Person, annotation='evil')
-            def intercept_me(self, person=Injected):
+            def intercept_me(self, person):
                 assert isinstance(person, ch.EvilPerson)
 
         obj = self.injector.get_instance(DomainObject)
@@ -189,7 +188,7 @@ class TestMethodInterceptors(object):
         class DomainObject(object):
             @self.interceptor(person=ch.Person, annotation='evil')
             def intercept_me(self, arg0,
-                    kwarg0=None, kwarg1=None, person=Injected):
+                    kwarg0=None, kwarg1=None, person=None):
                 assert arg0 == 0
                 assert kwarg0 == 1
                 assert kwarg1 is None
@@ -202,7 +201,7 @@ class TestMethodInterceptors(object):
         class DomainObject(object):
             @self.interceptor(person0=ch.Person, annotation='good')
             @self.interceptor(person1=ch.Person, annotation='evil')
-            def intercept_me(self, person0=Injected, person1=Injected):
+            def intercept_me(self, person0, person1):
                 assert isinstance(person0, ch.GoodPerson)
                 assert isinstance(person1, ch.EvilPerson)
 

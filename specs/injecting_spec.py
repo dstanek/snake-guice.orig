@@ -3,7 +3,7 @@
 """Specification for how snake-guice handles injection."""
 
 
-from snakeguice import Injector, inject, Injected, annotate
+from snakeguice import Injector, inject, annotate
 
 
 def describe_injecting_a_class():
@@ -17,7 +17,7 @@ def describe_injecting_a_class():
     class DomainObject(object):
 
         @inject(class_=IClass)
-        def __init__(self, class_=Injected):
+        def __init__(self, class_):
             self.class_ = class_
 
     class Module(object):

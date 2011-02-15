@@ -2,7 +2,7 @@
 
 """Specification for how snake-guice handles injection."""
 
-from snakeguice import inject, annotate, Injected, Injector
+from snakeguice import inject, annotate, Injector
 from snakeguice.config import Config, ConfigParserLoader
 
 
@@ -12,7 +12,7 @@ def describe_injecting_configuration_with_the_default_adapter():
 
         @inject(ipaddress=Config('config.ini:webservice:ipaddress'),
                 port=Config('config.ini:webservice:port'))
-        def __init__(self, ipaddress=Injected, port=Injected):
+        def __init__(self, ipaddress, port):
             self.ipaddress = ipaddress
             self.port = port
 

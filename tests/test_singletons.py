@@ -4,7 +4,7 @@
 Tests for the singleton scope.py
 """
 
-from snakeguice import inject, Injected, scopes, Injector, annotate
+from snakeguice import inject, scopes, Injector, annotate
 
 import cls_heirarchy as ch
 
@@ -14,8 +14,7 @@ class TestSingletonScope(object):
     class DomainObject(object):
 
         @inject(logger_a=ch.Logger, logger_b=ch.Logger, logger_c=ch.Logger)
-        def set_loggers(self, logger_a=Injected, logger_b=Injected,
-                logger_c=Injected):
+        def set_loggers(self, logger_a, logger_b, logger_c):
             self.logger_a = logger_a
             self.logger_b = logger_b
             self.logger_c = logger_c

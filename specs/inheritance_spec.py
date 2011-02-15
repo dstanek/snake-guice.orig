@@ -3,7 +3,7 @@
 """Specification for how snake-guice handles inherited classes."""
 
 
-from snakeguice import Injector, inject, Injected, annotate
+from snakeguice import Injector, inject, annotate
 
 
 class Data(object): pass

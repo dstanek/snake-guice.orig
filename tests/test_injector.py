@@ -6,8 +6,7 @@ injector module unit tests
 
 from dingus import Dingus
 
-from snakeguice import create_injector, injector, Injected
-from snakeguice import binder
+from snakeguice import create_injector, injector, binder
 import cls_heirarchy as ch
 
 

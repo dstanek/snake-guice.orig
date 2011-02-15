@@ -1,4 +1,4 @@
-from snakeguice import inject, Injected
+from snakeguice import inject
 
 from providers import UserProvider, RequestDataProvider
 
