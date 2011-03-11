@@ -69,7 +69,7 @@ class ListBinder(_MultiBinder):
 
 
 class Dict(Annotation):
-    """Used for binding lists."""
+    """Used for binding dictionaries."""
 
 
 class DictBinder(_MultiBinder):
