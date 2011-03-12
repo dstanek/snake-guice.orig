@@ -83,7 +83,8 @@ class Injector(object):
                 provider = self.get_instance(provider)
             return provider.get()
         else:
-            return self.create_object(cls)
+            instance = self.create_object(cls)
+            return self.inject_members(instance)
 
     def create_child(self, modules):
         """Create a new injector that inherits the state from this injector.
@@ -106,13 +107,18 @@ class Injector(object):
                                                  guicearg.annotation)
             instance = cls(**kwargs)
 
+        return instance
+
+    def inject_members(self, instance):
+        # this may be a little slow; done twice
+        guice_data = _GuiceData.composite_from_class(instance.__class__)
+
         for name, gm in guice_data.methods.items():
             kwargs = {}
             for param, guicearg in gm.items():
                 kwargs[param] = self.get_instance(guicearg.datatype,
                                                   guicearg.annotation)
             getattr(instance, name)(**kwargs)
-
         return instance
 
 
