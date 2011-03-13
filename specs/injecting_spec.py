@@ -30,3 +30,11 @@ def describe_injecting_a_class():
 
     def a_class_object_should_have_been_injected():
         assert instance.class_ is MyClass
+
+    def describe_injecting_a_subclass():
+        class SubDomainObject(DomainObject):
+            pass
+
+        def a_class_object_should_have_been_injected():
+            assert instance.class_ is MyClass
+
