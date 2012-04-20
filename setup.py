@@ -1,5 +1,5 @@
 from os.path import join as joinpath, dirname
-from distutils.core import setup, Command
+from setuptools import setup, Command
 
 from snakeguice import __pkginfo__ as pkg
 
