@@ -46,14 +46,21 @@ class Binder(object):
             raise errors.BindingError('baseclass %r already bound' % _class)
 
         if 'to' in kwargs:
-            #TODO: add some validation
+            if not isinstance(kwargs['to'], type):
+                raise errors.BindingError("'to' requires a new-style class")
+
             binding.provider = providers.create_simple_provider(kwargs['to'])
+
         elif 'to_provider' in kwargs:
             #TODO: add some validation
             provider = kwargs['to_provider']
             binding.provider = provider
+
         elif 'to_instance' in kwargs:
-            #TODO: add some validation
+            if not isinstance(kwargs['to_instance'], object):
+                raise errors.BindingError(
+                    "'to_instance' requires an instance of a new-style class")
+
             provider = kwargs['to_instance']
             binding.provider = providers.create_instance_provider(provider)
 
