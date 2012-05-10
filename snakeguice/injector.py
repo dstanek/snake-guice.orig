@@ -1,4 +1,5 @@
 import inspect
+import warnings
 
 from snakeguice.binder import Binder, Key
 from snakeguice.decorators import GuiceData as _GuiceData, inject
@@ -96,6 +97,12 @@ class Injector(object):
         return Injector(modules, binder=binder, stage=self._stage)
 
     def create_object(self, cls):
+        if not hasattr(cls, '__mro__'):
+            warnings.warn("can't create an instance of %r - no __mro__; "
+                         "this legacy behavior will be removed in a future "
+                          "version")
+            return cls
+
         guice_data = _GuiceData.composite_from_class(cls)
 
         if not guice_data.init:
