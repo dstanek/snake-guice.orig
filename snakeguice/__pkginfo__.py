@@ -5,7 +5,7 @@ libname = 'snake-guice'
 modname = 'snakeguice'
 packages = ['snakeguice']
 
-version = '0.3.1'
+version = '0.4'
 
 license = 'MIT'
 copyright = 'Copyright (c) 2008-2010 David Stanek (dstanek@dstanek.com)'
