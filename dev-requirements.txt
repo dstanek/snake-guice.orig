@@ -1,0 +1,4 @@
+nose==1.1.2
+mock==1.0b1
+routes==1.13
+webob==1.2.1

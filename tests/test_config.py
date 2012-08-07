@@ -1,11 +1,12 @@
 #!python
 
-from dingus import Dingus, DingusTestCase
+from mock import Mock
 
 from snakeguice import config
 
 
-class __TestConfig(DingusTestCase(config.Config)):
+#class __TestConfig(DingusTestCase(config.Config)):
+class __TestConfig(object):
 
     def setup(self):
         super(TestConfig, self).setup()
