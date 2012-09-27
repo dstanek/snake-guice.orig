@@ -9,3 +9,4 @@ definitely change.
 
 See the `main project website <http://snake-guice.googlecode.com>`_ for
 more information.
+
