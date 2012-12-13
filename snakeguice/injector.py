@@ -13,7 +13,7 @@ class ProvidesBinderHelper(object):
         members = [m for m in inspect.getmembers(module)
                    if inspect.ismethod(m[1])]
         for name, method in members:
-            if hasattr(method.im_func, '__guice_provides__'):
+            if hasattr(method, '__guice_provides__'):
                 type = method.__guice_provides__
                 provider = self._build_provider(module, type, method)
                 binder.bind(type, to_provider=provider)

@@ -1,3 +1,5 @@
+"""
+"""
 
 class ParameterInterceptor(object):
 
@@ -6,7 +8,7 @@ class ParameterInterceptor(object):
 
     def __call__(self, annotation=None, **kwargs):
         #TODO: add a test for more than one kwargs
-        (param_name, param_type) = kwargs.items()[0]
+        (param_name, param_type) = list(kwargs.items())[0]
 
         def callback(method):
             def _callback(*args, **kwargs):
