@@ -39,6 +39,12 @@ class TestSingletonScope(object):
         def set_place_d(self, place_d):
             self.place_d = place_d
 
+    class SimpleClass(object):
+
+        @inject(place = ch.Place)
+        def __init__(self, place):
+            self.place = place
+
     def assert_obj(self, obj):
         assert obj.logger_a is obj.logger_b
         assert obj.logger_b is obj.logger_c
@@ -75,3 +81,11 @@ class TestSingletonScope(object):
         self.assert_obj(obj)
         assert obj.logger_a.hot_place is obj.place_a
         assert obj.logger_a.cold_place is obj.place_c
+
+    def test_simple_singleton(self):
+
+        class MyModule:
+            def configure(self, binder):
+              binder.bind(ch.Place, to=ch.Beach,
+                          in_scope=scopes.SINGLETON)
+        obj = Injector(MyModule()).get_instance(self.SimpleClass)
